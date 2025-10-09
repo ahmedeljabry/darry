@@ -142,28 +142,6 @@
                 </div>
             </li>
             @endcanany
-            
-            @canany(['payments.view','payments.create'])
-            <li class="menu-item menu-item-submenu {{ request()->is('admin/payments*') ? 'menu-item-open menu-item-here' : '' }}" data-menu-toggle="hover" aria-haspopup="true">
-                <a href="javascript:;" class="menu-link menu-toggle">
-                    <span class="svg-icon menu-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24"><g fill="none"><rect x="2" y="6" width="20" height="12" rx="2" fill="#000" opacity=".25"/><rect x="6" y="11" width="6" height="2" rx="1" fill="#000"/></g></svg>
-                    </span>
-                    <span class="menu-text">{{ __('menu.payments') }}</span>
-                    <i class="menu-arrow"></i>
-                </a>
-                <div class="menu-submenu">
-                    <ul class="menu-subnav">
-                        @can('payments.view')
-                        <li class="menu-item"><a href="{{ $r('admin.payments.index','admin/payments') }}" class="menu-link"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">{{ __('menu.payments_index') }}</span></a></li>
-                        @endcan
-                        @can('payments.create')
-                        <li class="menu-item"><a href="{{ $r('admin.payments.create','admin/payments/create') }}" class="menu-link"><i class="menu-bullet menu-bullet-dot"><span></span></i><span class="menu-text">{{ __('menu.payments_create') }}</span></a></li>
-                        @endcan
-                    </ul>
-                </div>
-            </li>
-            @endcanany
 
             @canany(['leases.view','leases.create','leases.update','leases.delete'])
             <li class="menu-item menu-item-submenu {{ request()->is('admin/contracts*') ? 'menu-item-open menu-item-here' : '' }}" data-menu-toggle="hover" aria-haspopup="true">

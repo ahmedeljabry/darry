@@ -1,0 +1,24 @@
+<?php
+return [
+    'title' => 'العقارات',
+    'list' => 'قائمة العقارات',
+    'create' => 'إضافة عقار',
+    'name' => 'الاسم',
+    'city' => 'المدينة',
+    'coordinates' => 'الإحداثيات',
+    'country' => 'الدولة',
+    'governorate' => 'المحافظة',
+    'state' => 'المنطقة',
+    'area_sqm' => 'المساحة (م²)',
+    'use_type' => 'نوع الاستخدام',
+    'use_types' => [
+        'RESIDENTIAL' => 'سكني',
+        'MIXED' => 'متعدد الاستخدامات',
+        'COMMERCIAL' => 'تجاري',
+        'INDUSTRIAL' => 'صناعي',
+        'AGRICULTURAL' => 'زراعي',
+    ],
+    'facilities' => 'المرافق',
+    'thumbnail' => 'الصورة الرئيسية',
+    'images' => 'الصور',
+];

@@ -19,13 +19,11 @@ return [
     'contracts_list' => 'قائمة العقود',
     'contracts_create' => 'إنشاء عقد',
 
+    
+
     'invoices' => 'الفواتير',
     'invoices_list' => 'قائمة الفواتير',
     'invoices_issue' => 'إصدار فاتورة',
-
-    'payments' => 'المدفوعات',
-    'payments_index' => 'سجل المدفوعات',
-    'payments_create' => 'إضافة مدفوع',
 
     'contract_payments' => 'مدفوعات العقد',
     'contract_payments_list' => 'قائمة مدفوعات العقد',

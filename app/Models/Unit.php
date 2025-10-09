@@ -18,7 +18,7 @@ class Unit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'parent_id','property_id','name','unit_type','capacity','rooms','toilets','category','area_sqm','rent_type','rent_amount','electricity_acc','water_acc','status','occupancy_status',
+        'parent_id','property_id','name','unit_type','capacity','rooms','toilets','category','rent_type','rent_amount','electricity_acc','water_acc','status','occupancy_status',
     ];
 
     protected $casts = [

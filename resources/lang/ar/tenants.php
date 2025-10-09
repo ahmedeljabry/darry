@@ -1,0 +1,25 @@
+<?php
+return [
+    'title' => 'المستأجرون',
+    'list' => 'قائمة المستأجرين',
+    'create' => 'إضافة مستأجر',
+    'full_name' => 'الاسم الكامل',
+    'email' => 'البريد الإلكتروني',
+    'phone' => 'الهاتف',
+    'phone2' => 'الهاتف 2',
+    'address' => 'العنوان',
+    'tenant_type' => 'نوع المستأجر',
+    'tenant_types' => [
+        'PERSONAL' => 'شخصي',
+        'COMMERCIAL' => 'تجاري',
+    ],
+    'national_id_or_cr' => 'رقم الهوية / السجل التجاري',
+    'work_or_study_place' => 'جهة العمل / الدراسة',
+    'relatives' => 'المعارف/الأقارب للطوارئ',
+    'relative_1' => 'قريب 1',
+    'relative_2' => 'قريب 2',
+    'relative_name' => 'الاسم',
+    'relative_id' => 'رقم الهوية',
+    'relative_phone' => 'الهاتف',
+    'relative_kinship' => 'صلة القرابة',
+];

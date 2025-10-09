@@ -35,11 +35,11 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="form-check m-0 me-3">
                         <input class="form-check-input group-parent roles-parent" type="checkbox" id="{{ $key }}_parent" data-group="{{ $key }}" @checked($allChecked)>
-                        <label class="form-check-label text-white-50" for="{{ $key }}_parent">All</label>
+                        <label class="form-check-label text-white-50" for="{{ $key }}_parent">{{ __('messages.select_all') }}</label>
                     </div>
                     <div class="form-check m-0">
                         <input class="form-check-input checkChilds checkChilds_{{ $key }}" type="checkbox" id="{{ $key }}" data-parent="{{ $key }}" @checked($allChecked)>
-                        <label class="form-check-label text-white-50" for="{{ $key }}">Select</label>
+                        <label class="form-check-label text-white-50" for="{{ $key }}">{{ __('messages.select') }}</label>
                     </div>
                 </div>
             </div>

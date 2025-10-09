@@ -49,7 +49,7 @@ class PermissionsDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('#')->searchable(false)->orderable(false),
             Column::make('name')->title(__('menu.permissions')),
-            Column::make('guard_name')->title('Guard'),
+            Column::make('guard_name')->title(__('permissions.guard')),
             Column::make('created_at')->title(__('messages.created_at')),
             Column::computed('actions')->title(__('messages.actions'))->exportable(false)->printable(false)->width(120)->addClass('text-center'),
         ];
@@ -60,4 +60,3 @@ class PermissionsDataTable extends DataTable
         return 'Permissions_' . date('YmdHis');
     }
 }
-
