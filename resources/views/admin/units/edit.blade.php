@@ -19,7 +19,8 @@
 
 @section('content')
     <x-admin.form-card :title="__('units.edit')" :action="route('admin.units.update', $unit)" method="PUT" :back="route('admin.units.index')">
-        <x-admin.input-solid name="name" :label="__('units.name')" :value="$unit->name" placeholder="{{ __('units.name') }}" required />
+        <x-admin.select-solid name="property_id" :label="__('units.property')" :options="$properties" :value="old('property_id', $unit->property_id)" required />
+        <x-admin.input-solid name="name" :label="__('units.name')" :value="old('name', $unit->name)" placeholder="{{ __('units.name') }}" required />
         <div class="row mb-6">
             <label class="col-lg-4 col-form-label required fw-bold fs-6">
                 {{ __('units.unit_type') }}
@@ -40,12 +41,12 @@
                 @error('unit_type') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
         </div>
-        <x-admin.input-solid name="capacity" type="number" :label="__('units.capacity')" :value="$unit->capacity" placeholder="مثلاً: 4" min="0" required />
+        <x-admin.input-solid name="capacity" type="number" :label="__('units.capacity')" :value="old('capacity', $unit->capacity)" placeholder="مثلاً: 4" min="1" />
         <x-admin.select-solid name="rent_type" :label="__('units.rent_type')"
-            :options="['DAILY' => 'يومي', 'MONTHLY' => 'شهري', 'DAILY_OR_MONTHLY' => 'يومي أو شهري']"
-            :value="$unit->rent_type->value ?? $unit->rent_type" placeholder="{{ __('units.rent_type') }}" required />
-        <x-admin.money-solid name="rent_amount" :label="__('units.rent_amount')" :value="$unit->rent_amount" placeholder="مثلاً: 1500" required />
-        <x-admin.select-solid name="status" :label="__('units.status')" :options="['ACTIVE' => 'نشطة', 'INACTIVE' => 'غير نشطة']"
-            :value="$unit->status->value ?? $unit->status" placeholder="{{ __('units.status') }}" required />
+            :options="['DAILY' => __('units.rent_types.DAILY'), 'MONTHLY' => __('units.rent_types.MONTHLY'), 'DAILY_OR_MONTHLY' => __('units.rent_types.DAILY_OR_MONTHLY')]"
+            :value="old('rent_type', $unit->rent_type->value ?? $unit->rent_type)" placeholder="{{ __('units.rent_type') }}" required />
+        <x-admin.money-solid name="rent_amount" :label="__('units.rent_amount')" :value="old('rent_amount', $unit->rent_amount)" placeholder="مثلاً: 1500" required />
+        <x-admin.select-solid name="status" :label="__('units.status')" :options="['ACTIVE' => __('units.statuses.ACTIVE'), 'INACTIVE' => __('units.statuses.INACTIVE')]"
+            :value="old('status', $unit->status->value ?? $unit->status)" placeholder="{{ __('units.status') }}" required />
     </x-admin.form-card>
 @endsection

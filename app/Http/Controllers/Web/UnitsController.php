@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Units\{ StoreUnitRequest , UpdateUnitRequest };
 use App\Models\Unit;
+use App\Models\Property;
 use App\Services\UnitsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -22,7 +23,8 @@ class UnitsController extends Controller
 
     public function create(): View
     {
-        return view('admin.units.create');
+        $properties = Property::query()->pluck('name', 'id');
+        return view('admin.units.create', compact('properties'));
     }
 
     public function store(StoreUnitRequest $request): RedirectResponse
@@ -38,7 +40,8 @@ class UnitsController extends Controller
 
     public function edit(Unit $unit): View
     {
-        return view('admin.units.edit', compact('unit'));
+        $properties = Property::query()->pluck('name', 'id');
+        return view('admin.units.edit', compact('unit','properties'));
     }
 
     public function update(UpdateUnitRequest $request, Unit $unit): RedirectResponse
@@ -53,4 +56,3 @@ class UnitsController extends Controller
         return redirect()->route('admin.units.index')->with('status', __('messages.success_deleted'));
     }
 }
-

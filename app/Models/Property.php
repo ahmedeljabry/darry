@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Domain\Enums\PropertyUseType;
+use App\Models\Floor;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -22,6 +23,12 @@ class Property extends Model
         'images' => 'array',
     ];
 
+    public function getFullAddressAttribute(): string
+    {
+        $parts = array_filter([$this->country, $this->governorate, $this->state, $this->city]);
+        return trim(implode(' - ', $parts));
+    }
+
     public function facilities(): BelongsToMany
     {
         return $this->belongsToMany(Facility::class, 'facility_property');
@@ -31,6 +38,9 @@ class Property extends Model
     {
         return $this->hasMany(Unit::class);
     }
+
+    public function floors(): HasMany
+    {
+        return $this->hasMany(Floor::class)->orderBy('sort_order')->orderBy('id');
+    }
 }
-
-

@@ -17,4 +17,7 @@ return [
     'back' => 'رجوع',
     'show' => 'عرض',
     'edit' => 'تعديل',
+    'current_files' => 'الملفات الحالية',
+    'not_available' => 'لا توجد بيانات',
 ];
+

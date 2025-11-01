@@ -15,7 +15,8 @@ class UpdateUnitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_id' => ['nullable','uuid','exists:units,id'],
+            'property_id' => ['sometimes','required','integer','exists:properties,id'],
+            'parent_id' => ['nullable','integer','exists:units,id'],
             'name' => ['sometimes','required','string','max:255'],
             'unit_type' => ['sometimes','required','in:APARTMENT,ROOM,BED'],
             'capacity' => ['nullable','integer','min:1'],
@@ -30,4 +31,3 @@ class UpdateUnitRequest extends FormRequest
         return (new StoreUnitRequest())->attributes();
     }
 }
-

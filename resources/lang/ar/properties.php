@@ -21,4 +21,5 @@ return [
     'facilities' => 'المرافق',
     'thumbnail' => 'الصورة الرئيسية',
     'images' => 'الصور',
+    'address' => 'العنوان',
 ];

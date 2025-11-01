@@ -30,7 +30,7 @@ class UpdatePropertyRequest extends FormRequest
             'delete_images' => ['nullable','array'],
             'delete_images.*' => ['nullable','string'],
             'facilities' => ['nullable','array'],
-            'facilities.*' => ['uuid'],
+            'facilities.*' => ['integer','exists:facilities,id'],
         ];
     }
 }

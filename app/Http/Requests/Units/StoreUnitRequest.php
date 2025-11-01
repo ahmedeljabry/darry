@@ -15,7 +15,8 @@ class StoreUnitRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_id' => ['nullable','uuid','exists:units,id'],
+            'property_id' => ['required','integer','exists:properties,id'],
+            'parent_id' => ['nullable','integer','exists:units,id'],
             'name' => ['required','string','max:255'],
             'unit_type' => ['required','in:APARTMENT,ROOM,BED'],
             'capacity' => ['nullable','integer','min:1'],
@@ -28,6 +29,7 @@ class StoreUnitRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'property_id' => __('units.property'),
             'parent_id' => __('units.parent_unit'),
             'name' => __('units.name'),
             'unit_type' => __('units.unit_type'),
@@ -38,4 +40,3 @@ class StoreUnitRequest extends FormRequest
         ];
     }
 }
-

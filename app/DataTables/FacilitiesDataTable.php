@@ -17,7 +17,7 @@ class FacilitiesDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            ->editColumn('created_at' , fn ($f) => $f->created_at?->format('Y-m-d h:i A'))
+            ->editColumn('description', fn (Facility $f) => $f->description ?: '--')
             ->addColumn('actions', function (Facility $f) {
                 return view('admin.layouts.partials._actions', [
                     'showRoute' => null,
@@ -31,7 +31,7 @@ class FacilitiesDataTable extends DataTable
 
     public function query(Facility $model): QueryBuilder
     {
-        return $model->newQuery()->select(['id','name','created_at']);
+        return $model->newQuery()->select(['id','name','description']);
     }
 
     public function html(): HtmlBuilder
@@ -49,7 +49,7 @@ class FacilitiesDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('#')->searchable(false)->orderable(false),
             Column::make('name')->title(__('facilities.name')),
-            Column::make('created_at')->title(__('messages.created_at'))->searchable(false),
+            Column::make('description')->title(__('facilities.description')),
             Column::computed('actions')->title(__('messages.actions'))->exportable(false)->printable(false)->width(120)->addClass('text-center'),
         ];
     }
@@ -59,4 +59,3 @@ class FacilitiesDataTable extends DataTable
         return 'Facilities_' . date('YmdHis');
     }
 }
-

@@ -22,11 +22,12 @@ class PropertiesDataTable extends DataTable
                 $val = $p->use_type instanceof PropertyUseType ? $p->use_type->value : (string) $p->use_type;
                 return __('properties.use_types.' . $val);
             })
-            ->addColumn('location', fn (Property $p) => trim(implode(' • ', array_filter([$p->country, $p->state, $p->city]))))
+            // تعديل العنوان ليكون كاملاً
+            ->addColumn('address', fn (Property $p) => $p->full_address)
             ->editColumn('coordinates' , fn (Property $p) => $p->coordinates ?: '--')
             ->addColumn('actions', function (Property $p) {
                 return view('admin.layouts.partials._actions', [
-                    'showRoute' => null,
+                    'showRoute' => route('admin.properties.show', $p->id),
                     'editRoute' => route('admin.properties.edit', $p->id),
                     'deleteRoute' => route('admin.properties.destroy', $p->id),
                 ])->render();
@@ -37,7 +38,9 @@ class PropertiesDataTable extends DataTable
 
     public function query(Property $model): QueryBuilder
     {
-        return $model->newQuery()->withCount('units')->select(['id','name','country','state','city','coordinates','use_type']);
+        return $model->newQuery()->withCount('units')->select([
+            'id','name','country','governorate','state','city','coordinates','use_type'
+        ]);
     }
 
     public function html(): HtmlBuilder
@@ -55,7 +58,7 @@ class PropertiesDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('#')->searchable(false)->orderable(false),
             Column::make('name')->title(__('properties.name')),
-            Column::make('location')->title(__('properties.city')),
+            Column::computed('address')->title(__('properties.address')),
             Column::make('use_type')->title(__('properties.use_type')),
             Column::make('coordinates')->title(__('properties.coordinates')),
             Column::computed('actions')->title(__('messages.actions'))->exportable(false)->printable(false)->width(120)->addClass('text-center'),
@@ -67,4 +70,3 @@ class PropertiesDataTable extends DataTable
         return 'Properties_' . date('YmdHis');
     }
 }
-

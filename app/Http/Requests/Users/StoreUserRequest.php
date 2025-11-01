@@ -19,9 +19,9 @@ class StoreUserRequest extends FormRequest
             'email' => ['required','email','max:255','unique:users,email'],
             'phone' => ['nullable','string','max:50'],
             'status' => ['required','in:ACTIVE,INACTIVE'],
+            'property_id' => ['nullable','integer','exists:properties,id'],
             'role' => ['required','exists:roles,name'],
             'password' => ['required','confirmed','min:8'],
         ];
     }
 }
-

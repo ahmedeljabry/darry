@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -19,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'property_id',
         'email',
         'phone',
         'status',
@@ -46,5 +48,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
     }
 }

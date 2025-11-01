@@ -29,29 +29,52 @@
 
         <hr>
         <h5 class="mb-3">{{ __('tenants.relatives') }}</h5>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card card-custom mb-4">
-                    <div class="card-header"><div class="card-title">{{ __('tenants.relative_1') }}</div></div>
-                    <div class="card-body">
-                        <x-admin.input-solid name="relatives[0][name]" :label="__('tenants.relative_name')" />
-                        <x-admin.input-solid name="relatives[0][id_no]" :label="__('tenants.relative_id')" />
-                        <x-admin.input-solid name="relatives[0][phone]" :label="__('tenants.relative_phone')" />
-                        <x-admin.input-solid name="relatives[0][kinship]" :label="__('tenants.relative_kinship')" />
+        <div id="tenantRelatives">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-custom mb-4">
+                        <div class="card-header"><div class="card-title">{{ __('tenants.relative_1') }}</div></div>
+                        <div class="card-body">
+                            <x-admin.input-solid name="relatives[0][name]" :label="__('tenants.relative_name')" />
+                            <x-admin.input-solid name="relatives[0][id_no]" :label="__('tenants.relative_id')" />
+                            <x-admin.input-solid name="relatives[0][phone]" :label="__('tenants.relative_phone')" />
+                            <x-admin.input-solid name="relatives[0][kinship]" :label="__('tenants.relative_kinship')" />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card card-custom mb-4">
-                    <div class="card-header"><div class="card-title">{{ __('tenants.relative_2') }}</div></div>
-                    <div class="card-body">
-                        <x-admin.input-solid name="relatives[1][name]" :label="__('tenants.relative_name')" />
-                        <x-admin.input-solid name="relatives[1][id_no]" :label="__('tenants.relative_id')" />
-                        <x-admin.input-solid name="relatives[1][phone]" :label="__('tenants.relative_phone')" />
-                        <x-admin.input-solid name="relatives[1][kinship]" :label="__('tenants.relative_kinship')" />
+                <div class="col-md-6">
+                    <div class="card card-custom mb-4">
+                        <div class="card-header"><div class="card-title">{{ __('tenants.relative_2') }}</div></div>
+                        <div class="card-body">
+                            <x-admin.input-solid name="relatives[1][name]" :label="__('tenants.relative_name')" />
+                            <x-admin.input-solid name="relatives[1][id_no]" :label="__('tenants.relative_id')" />
+                            <x-admin.input-solid name="relatives[1][phone]" :label="__('tenants.relative_phone')" />
+                            <x-admin.input-solid name="relatives[1][kinship]" :label="__('tenants.relative_kinship')" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </x-admin.form-card>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tenantTypeSelect = document.querySelector('select[name="tenant_type"]');
+            const relativesSection = document.getElementById('tenantRelatives');
+            if (!tenantTypeSelect || !relativesSection) {
+                return;
+            }
+            const toggleRelatives = function () {
+                const isCommercial = tenantTypeSelect.value === 'COMMERCIAL';
+                relativesSection.classList.toggle('d-none', isCommercial);
+                relativesSection.querySelectorAll('input').forEach(function (input) {
+                    input.disabled = isCommercial;
+                });
+            };
+            tenantTypeSelect.addEventListener('change', toggleRelatives);
+            toggleRelatives();
+        });
+    </script>
+@endpush

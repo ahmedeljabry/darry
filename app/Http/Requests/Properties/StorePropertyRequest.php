@@ -27,8 +27,7 @@ class StorePropertyRequest extends FormRequest
             'images' => ['nullable','array'],
             'images.*' => ['nullable','image'],
             'facilities' => ['nullable','array'],
-            'facilities.*' => ['uuid'],
+            'facilities.*' => ['integer','exists:facilities,id'],
         ];
     }
 }
-

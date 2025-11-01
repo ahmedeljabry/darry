@@ -36,10 +36,10 @@ class ContractsController extends Controller
         if (empty($data['contract_no'])) {
             $data['contract_no'] = 'CTR-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
         }
-        // compute end_date if not provided
-        $start = \Carbon\Carbon::parse($data['start_date']);
-        $data['end_date'] = $start->copy()->addMonths((int) $data['duration_months']);
-        // default rent amount from unit if empty
+        if (!empty($data['start_date']) && !empty($data['duration_months'])) {
+            $start = \Carbon\Carbon::parse($data['start_date']);
+            $data['end_date'] = $start->copy()->addMonths((int) $data['duration_months'])->subDay()->toDateString();
+        }
         if (empty($data['rent_amount'])) {
             $unit = Unit::find($data['unit_id']);
             if ($unit) { $data['rent_amount'] = $unit->rent_amount; }
@@ -61,7 +61,7 @@ class ContractsController extends Controller
         $data = $request->validated();
         if (!empty($data['start_date']) && !empty($data['duration_months'])) {
             $start = \Carbon\Carbon::parse($data['start_date']);
-            $data['end_date'] = $start->copy()->addMonths((int) $data['duration_months']);
+            $data['end_date'] = $start->copy()->addMonths((int) $data['duration_months'])->subDay()->toDateString();
         }
         if (empty($data['rent_amount']) && isset($data['unit_id'])) {
             $unit = Unit::find($data['unit_id']);

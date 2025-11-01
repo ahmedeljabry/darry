@@ -14,6 +14,27 @@
     <!--end::Breadcrumb-->
 @endsection
 
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tenantTypeSelect = document.querySelector('select[name="tenant_type"]');
+            const relativesSection = document.getElementById('tenantRelatives');
+            if (!tenantTypeSelect || !relativesSection) {
+                return;
+            }
+            const toggleRelatives = function () {
+                const isCommercial = tenantTypeSelect.value === 'COMMERCIAL';
+                relativesSection.classList.toggle('d-none', isCommercial);
+                relativesSection.querySelectorAll('input').forEach(function (input) {
+                    input.disabled = isCommercial;
+                });
+            };
+            tenantTypeSelect.addEventListener('change', toggleRelatives);
+            toggleRelatives();
+        });
+    </script>
+@endpush
+
 @section('content')
     <x-admin.form-card :title="__('tenants.edit')" :action="route('admin.tenants.update', $tenant)" method="PUT" :back="route('admin.tenants.index')">
         <x-admin.select-solid name="tenant_type" :label="__('tenants.tenant_type')" :options="['PERSONAL' => __('tenants.tenant_types.PERSONAL'),'COMMERCIAL' => __('tenants.tenant_types.COMMERCIAL')]" :value="old('tenant_type', $tenant->tenant_type)" required />
@@ -30,7 +51,8 @@
         @php($rels = $tenant->relatives()->take(2)->get()->values())
         <hr>
         <h5 class="mb-3">{{ __('tenants.relatives') }}</h5>
-        <div class="row">
+        <div id="tenantRelatives">
+            <div class="row">
             <div class="col-md-6">
                 <div class="card card-custom mb-4">
                     <div class="card-header"><div class="card-title">{{ __('tenants.relative_1') }}</div></div>
@@ -53,6 +75,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </x-admin.form-card>
 @endsection

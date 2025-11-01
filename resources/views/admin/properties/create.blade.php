@@ -19,15 +19,15 @@
 
         <x-admin.input-solid name="name" :label="__('properties.name')" :placeholder="__('properties.name')" :required='true' />
 
-        <x-admin.input-solid name="country" :label="__('properties.country')" :placeholder="__('properties.country')" :required='true' />
+        <x-admin.select-solid name="country" :label="__('properties.country')" :options="App\Helpers\Place::countries()" :placeholder="__('properties.country')" :searchable="true" />
 
-        <x-admin.input-solid name="governorate" :label="__('properties.governorate')" :placeholder="__('properties.governorate')" required />
+        <x-admin.select-solid name="governorate" :label="__('properties.governorate')" :options="App\Helpers\Place::governorates()" :placeholder="__('properties.governorate')" :searchable="true" />
 
-        <x-admin.input-solid name="state" :label="__('properties.state')" :placeholder="__('properties.state')" required />
+        <x-admin.select-solid name="state" :label="__('properties.state')" :options="App\Helpers\Place::states()" :placeholder="__('properties.state')" :searchable="true" />
 
-        <x-admin.input-solid name="city" :label="__('properties.city')" :placeholder="__('properties.city')" required />
+        <x-admin.input-solid name="city" :label="__('properties.address')" :placeholder="__('properties.address')" />
         
-        <x-admin.input-solid name="coordinates" :label="__('properties.coordinates')" required />
+        <x-admin.input-solid name="coordinates" :label="__('properties.coordinates')" />
 
         <x-admin.input-solid name="area_sqm" type="number" :label="__('properties.area_sqm')" placeholder="120" min="0" />
 
@@ -35,14 +35,7 @@
             <label class="col-lg-4 col-form-label fw-bold fs-6">{{ __('properties.use_type') }}</label>
             <div class="col-lg-8">
                 @php $useOld = old('use_type'); @endphp
-                <div class="d-flex flex-wrap gap-2" id="useTypeGroup">
-                    @foreach(['RESIDENTIAL','MIXED','COMMERCIAL','INDUSTRIAL','AGRICULTURAL'] as $val)
-                        <label class="btn btn-outline-primary btn-sm {{ $useOld === $val ? 'active' : '' }}">
-                            <input type="radio" name="use_type" value="{{ $val }}" {{ $useOld === $val ? 'checked' : '' }}>
-                            {{ __('properties.use_types.'.$val) }}
-                        </label>
-                    @endforeach
-                </div>
+                <x-admin.select-solid name="use_type" :label="__('properties.use_type')" :options="App\Domain\Enums\PropertyUseType::cases()" :option-label="fn($u)=>__("properties.use_types.".$u->value)" :option-value="fn($u)=>$u->value" />
                 @error('use_type') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
         </div>

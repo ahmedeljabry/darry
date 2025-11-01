@@ -15,4 +15,18 @@ return [
         'ROOM' => 'غرفة',
         'BED' => 'سرير',
     ],
+    'quick_add' => 'إضافة وحدة سريعة',
+    'property' => 'المبنى',
+    'parent_unit' => 'الوحدة الأم',
+    'empty' => 'لم يتم إضافة وحدات بعد.',
+    'rent_types' => [
+        'DAILY' => 'يومي',
+        'MONTHLY' => 'شهري',
+        'DAILY_OR_MONTHLY' => 'يومي أو شهري',
+    ],
+    'statuses' => [
+        'ACTIVE' => 'نشطة',
+        'INACTIVE' => 'غير نشطة',
+    ],
 ];
+

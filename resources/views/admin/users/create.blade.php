@@ -10,6 +10,12 @@
 
 @section('content')
     <x-admin.form-card :title="__('menu.users_create')" :action="route('admin.users.store')" :back="route('admin.users.index')">
+        @if($canManageSystem)
+            <x-admin.select-solid name="property_id" :label="__('users.assign_property')" :options="$properties" />
+        @else
+            <input type="hidden" name="property_id" value="{{ $currentPropertyId }}">
+            <x-admin.input-solid name="property_display" :label="__('users.assign_property')" :value="$currentPropertyName" disabled />
+        @endif
         <div class="row">
             <div class="col-md-6"><x-admin.input-solid name="name" :label="__('tenants.full_name')" :placeholder="__('tenants.full_name')" required /></div>
             <div class="col-md-6"><x-admin.input-solid name="phone" :label="__('tenants.phone')" placeholder="05XXXXXXXX" /></div>

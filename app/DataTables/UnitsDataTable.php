@@ -21,6 +21,7 @@ class UnitsDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
+            ->addColumn('property', fn (Unit $u) => $u->property?->name ?? '--')
             ->editColumn('rent_amount', fn(Unit $u) => number_format((float) $u->rent_amount, 2))
             ->editColumn('unit_type', function (Unit $u) {
                 $type = $u->unit_type instanceof UnitType ? $u->unit_type : UnitType::from((string) $u->unit_type);
@@ -64,15 +65,18 @@ class UnitsDataTable extends DataTable
 
     public function query(Unit $model): QueryBuilder
     {
-        return $model->newQuery()->select([
-            'id',
-            'name',
-            'unit_type',
-            'capacity',
-            'rent_type',
-            'rent_amount',
-            'status',
-        ]);
+        return $model->newQuery()
+            ->with('property:id,name')
+            ->select([
+                'id',
+                'property_id',
+                'name',
+                'unit_type',
+                'capacity',
+                'rent_type',
+                'rent_amount',
+                'status',
+            ]);
     }
 
     public function html(): HtmlBuilder
@@ -97,6 +101,7 @@ class UnitsDataTable extends DataTable
                 ->orderable(false),
 
             Column::make('name')->title(__('units.name')),
+            Column::computed('property')->title(__('units.property')),
             Column::make('unit_type')->title(__('units.unit_type')),
             Column::make('capacity')->title(__('units.capacity')),
             Column::make('rent_amount')->title(__('units.rent_amount')),

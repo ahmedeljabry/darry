@@ -18,6 +18,12 @@ class UsersDataTable extends DataTable
         return (new EloquentDataTable($query))
             ->addIndexColumn()
             ->addColumn('role', function(User $u){ return $u->roles->pluck('name')->implode(', '); })
+            ->addColumn('property', function (User $u) {
+                if ($u->property) {
+                    return $u->property->name;
+                }
+                return __('users.scope_system_short') ?? __('users.scope_system');
+            })
             ->editColumn('status', fn(User $u) => $u->status === 'ACTIVE' ? __('owners.active') : __('owners.inactive'))
             ->editColumn('created_at', fn(User $u) => optional($u->created_at)->format('Y-m-d'))
             ->addColumn('actions', function (User $u) {
@@ -33,7 +39,10 @@ class UsersDataTable extends DataTable
 
     public function query(User $model): QueryBuilder
     {
-        return $model->newQuery()->select(['id','name','email','phone','status','created_at']);
+        return $model->newQuery()
+            ->with(['roles', 'property'])
+            ->when(auth()->user()?->property_id, fn ($query, $propertyId) => $query->where('property_id', $propertyId))
+            ->select(['id','property_id','name','email','phone','status','created_at']);
     }
 
     public function html(): HtmlBuilder
@@ -53,6 +62,7 @@ class UsersDataTable extends DataTable
             Column::make('name')->title(__('menu.users')),
             Column::make('email')->title(__('auth.email') ?? 'البريد الإلكتروني'),
             Column::make('phone')->title(__('tenants.phone')),
+            Column::computed('property')->title(__('units.property')),
             Column::make('status')->title(__('owners.status')),
             Column::make('role')->title(__('roles.roles') ?? 'الدور'),
             Column::make('created_at')->title(__('messages.created_at')),

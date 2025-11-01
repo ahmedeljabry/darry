@@ -4,6 +4,7 @@
 
 @section('content')
     <x-admin.form-card :title="__('units.create')" :action="route('admin.units.store')" :back="route('admin.units.index')">
+        <x-admin.select-solid name="property_id" :label="__('units.property')" :options="$properties" required />
         <x-admin.input-solid name="name" :label="__('units.name')" placeholder="{{ __('units.name') }}" required />
         <div class="row mb-6">
             <label class="col-lg-4 col-form-label required fw-bold fs-6">
@@ -25,11 +26,11 @@
                 @error('unit_type') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
             </div>
         </div>
-        <x-admin.input-solid name="capacity" type="number" :label="__('units.capacity')" placeholder="مثلاً: 4" min="0" required />
+        <x-admin.input-solid name="capacity" type="number" :label="__('units.capacity')" placeholder="مثلاً: 4" min="1" />
         <x-admin.select-solid name="rent_type" :label="__('units.rent_type')"
-            :options="['DAILY' => 'يومي', 'MONTHLY' => 'شهري', 'DAILY_OR_MONTHLY' => 'يومي أو شهري']"
+            :options="['DAILY' => __('units.rent_types.DAILY'), 'MONTHLY' => __('units.rent_types.MONTHLY'), 'DAILY_OR_MONTHLY' => __('units.rent_types.DAILY_OR_MONTHLY')]"
             placeholder="{{ __('units.rent_type') }}" required />
         <x-admin.money-solid name="rent_amount" :label="__('units.rent_amount')" placeholder="مثلاً: 1500" required />
-        <x-admin.select-solid name="status" :label="__('units.status')" :options="['ACTIVE' => 'نشطة', 'INACTIVE' => 'غير نشطة']" placeholder="{{ __('units.status') }}" required />
+        <x-admin.select-solid name="status" :label="__('units.status')" :options="['ACTIVE' => __('units.statuses.ACTIVE'), 'INACTIVE' => __('units.statuses.INACTIVE')]" placeholder="{{ __('units.status') }}" required />
     </x-admin.form-card>
 @endsection

@@ -6,12 +6,16 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Facility;
+use App\Models\Unit;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\Properties\StorePropertyRequest;
 use App\Http\Requests\Properties\UpdatePropertyRequest;
 use Illuminate\View\View;
 use App\DataTables\PropertiesDataTable;
 use Illuminate\Support\Facades\Storage;
+use App\Domain\Enums\UnitType;
+use App\Domain\Enums\RentType;
+use App\Domain\Enums\UnitStatus;
 
 class PropertiesController extends Controller
 {
@@ -24,6 +28,31 @@ class PropertiesController extends Controller
     {
         $facilities = Facility::query()->pluck('name','id');
         return view('admin.properties.create', compact('facilities'));
+    }
+
+    public function show(Property $property): View
+    {
+        $property->load([
+            'facilities:id,name',
+            'floors',
+            'units' => fn ($query) => $query->with('parent')->orderBy('name'),
+        ]);
+
+        $unitTypes = UnitType::cases();
+        $rentTypes = RentType::cases();
+        $unitStatuses = UnitStatus::cases();
+        $parentUnits = Unit::query()
+            ->where('property_id', $property->id)
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        return view('admin.properties.show', [
+            'property' => $property,
+            'unitTypes' => $unitTypes,
+            'rentTypes' => $rentTypes,
+            'unitStatuses' => $unitStatuses,
+            'parentUnits' => $parentUnits,
+        ]);
     }
 
     public function store(StorePropertyRequest $request): RedirectResponse
@@ -42,9 +71,7 @@ class PropertiesController extends Controller
         }
 
         $property = Property::create($data);
-        if (!empty($data['facilities'])) {
-            $property->facilities()->sync($data['facilities']);
-        }
+        $property->facilities()->sync($data['facilities'] ?? []);
 
         return redirect()->route('admin.properties.index')->with('status', __('messages.success_created'));
     }
@@ -94,9 +121,7 @@ class PropertiesController extends Controller
         $data['images'] = $currentImages;
 
         $property->update($data);
-        if (!empty($data['facilities'])) {
-            $property->facilities()->sync($data['facilities']);
-        }
+        $property->facilities()->sync($data['facilities'] ?? []);
 
         return redirect()->route('admin.properties.index')->with('status', __('messages.success_updated'));
     }

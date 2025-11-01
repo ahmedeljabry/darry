@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\TenantsController as WebTenantsController;
 use App\Http\Controllers\Web\PaymentsController as WebPaymentsController;
 use App\Http\Controllers\Web\UsersController as WebUsersController;
 use App\Http\Controllers\Web\SettingsController as WebSettingsController;
+use App\Http\Controllers\Web\PropertyFloorsController;
 
 
 Route::get('/' , function () {
@@ -31,6 +32,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('tenants/data', [WebTenantsController::class, 'data'])->name('tenants.data');
 
     Route::resource('properties', \App\Http\Controllers\Web\PropertiesController::class);
+    Route::post('properties/{property}/floors', [PropertyFloorsController::class, 'store'])->name('properties.floors.store');
+    Route::put('properties/{property}/floors/{floor}', [PropertyFloorsController::class, 'update'])->name('properties.floors.update');
+    Route::delete('properties/{property}/floors/{floor}', [PropertyFloorsController::class, 'destroy'])->name('properties.floors.destroy');
     Route::resource('contracts', \App\Http\Controllers\Web\ContractsController::class);
     Route::resource('contract-payments', \App\Http\Controllers\Web\ContractPaymentsController::class);
     Route::resource('owners', \App\Http\Controllers\Web\OwnersController::class);
@@ -43,6 +47,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('settings', [WebSettingsController::class, 'index'])->name('settings.index');
     Route::post('settings', [WebSettingsController::class, 'update'])->name('settings.update');
 });
+
 
 
 
