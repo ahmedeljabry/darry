@@ -1,217 +1,408 @@
 @extends('admin.layouts.master')
 
 @section('title', __('messages.dashboard'))
+
 @section('breadcrumbs')
-    <!--begin::Page Title-->
     <h5 class="text-dark font-weight-bold mt-2 mb-2 mr-5">{{ __('messages.dashboard') }}</h5>
-    <!--end::Page Title-->
-    <!--begin::Breadcrumb-->
     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
         <li class="breadcrumb-item text-muted">
-            <a href="" class="text-muted">{{ __('messages.dashboard') }}</a>
+            <span class="text-muted">{{ __('messages.dashboard') }}</span>
         </li>
     </ul>
-    <!--end::Breadcrumb-->
 @endsection
+
 @section('content')
-    <!-- KPIs Row 1 -->
-    <div class="row">
-        <div class="col-xl-3 col-md-6 mb-5">
-            <div class="card card-custom bgi-no-repeat card-stretch gutter-b"
-                style="background-position: right top; background-size: 30% auto; background-image: url(assets/media/svg/shapes/abstract-1.svg)">
-                <div class="card-body">
-                    <span class="svg-icon svg-icon-2x svg-icon-info">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g fill="none" fill-rule="evenodd">
-                                <rect width="24" height="24" />
-                                <path
-                                    d="M6,2 L18,2 C18.5522847,2 19,2.44771525 19,3 L19,12 C19,12.5522847 18.5522847,13 18,13 L6,13 C5.44771525,13 5,12.5522847 5,12 L5,3 C5,2.44771525 5.44771525,2 6,2 Z"
-                                    fill="#000" opacity=".3" />
-                                <path
-                                    d="M3.79274528,6.57253826 L12,12.5 L20.2072547,6.57253826 L21,6.97787787 L21,17 C21,18.1045695 20.1045695,19 19,19 L5,19 C3.8954305,19 3,18.1045695 3,17 L3,6.97787787 Z"
-                                    fill="#000" />
-                            </g>
-                        </svg>
+    @php
+        $user = auth()->user();
+        $currency = $currency ?? 'SAR';
+        $financeTotals = $financeTotals ?? ['income' => 0, 'expenses' => 0, 'net' => 0];
+        $kpiCards = [
+            [
+                'title' => 'إجمالي الوحدات',
+                'value' => number_format($kpiUnits ?? 0),
+                'description' => 'جميع الوحدات المسجلة',
+                'icon' => 'la la-building',
+                'color' => 'primary',
+                'link' => route('admin.units.index'),
+            ],
+            [
+                'title' => 'الوحدات المشغولة',
+                'value' => number_format($kpiOccupiedUnits ?? 0),
+                'description' => 'وحدات تحت التعاقد حالياً',
+                'icon' => 'la la-user-check',
+                'color' => 'success',
+                'link' => route('admin.units.index'),
+            ],
+            [
+                'title' => 'الوحدات الشاغرة',
+                'value' => number_format($kpiVacantUnits ?? 0),
+                'description' => 'فرص تأجير متاحة',
+                'icon' => 'la la-door-open',
+                'color' => 'info',
+                'link' => route('admin.units.index'),
+            ],
+            [
+                'title' => 'عقود تقترب من الانتهاء',
+                'value' => number_format($kpiContractsNearExpiry ?? 0),
+                'description' => 'خلال الثلاثين يوماً القادمة',
+                'icon' => 'la la-hourglass-half',
+                'color' => 'warning',
+                'link' => route('admin.contracts.index'),
+            ],
+        ];
+    @endphp
+
+    <!-- Hero -->
+    <div class="card card-custom mb-10 bgi-no-repeat bgi-position-y-center bgi-size-cover"
+         style="background-image: url({{ asset('admin/assets/media/svg/patterns/wave.svg') }});">
+        <div class="card-body p-9">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between">
+                <div>
+                    <span class="badge badge-light-primary font-weight-bold px-4 py-2 mb-4">
+                        {{ now()->translatedFormat('l d F Y') }}
                     </span>
-                    <span class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-0 mt-6 d-block"
-                        data-count="{{ $kpiUnits }}">{{ $kpiUnits }}</span>
-                    <span class="font-weight-bold text-muted font-size-sm">عدد الوحدات</span>
-                    <a href="{{ route('admin.dashboard') }}" class="stretched-link"></a>
+                    <h2 class="text-dark font-weight-bolder mb-3">
+                        أهلاً {{ $user?->name ?? '' }}, لوحة القيادة جاهزة للعرض
+                    </h2>
+                    <p class="text-muted font-size-lg mb-0">
+                        راجع مؤشراتك المالية والتشغيلية بسرعة، وتصرف مبكراً تجاه العقود والمدفوعات القريبة.
+                    </p>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-5">
-            <div class="card card-custom bgi-no-repeat card-stretch gutter-b"
-                style="background-position: right top; background-size: 30% auto; background-image: url(assets/media/svg/shapes/abstract-2.svg)">
-                <div class="card-body">
-                    <span class="svg-icon svg-icon-2x svg-icon-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g fill="none" fill-rule="evenodd">
-                                <rect width="24" height="24" />
-                                <path
-                                    d="M5,3 L19,3 C20.1045695,3 21,3.8954305 21,5 L21,19 C21,20.1045695 20.1045695,21 19,21 L5,21 C3.8954305,21 3,20.1045695 3,19 L3,5 C3,3.8954305 3.8954305,3 5,3 Z"
-                                    fill="#000" opacity=".3" />
-                                <path d="M7,10 L11,14 L17,8" stroke="#000" stroke-width="2" />
-                            </g>
-                        </svg>
-                    </span>
-                    <span class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-0 mt-6 d-block"
-                        data-count="{{ $kpiVacantUnits ?? 0 }}">{{ $kpiVacantUnits ?? 0 }}</span>
-                    <span class="font-weight-bold text-muted font-size-sm">الوحدات الشاغرة</span>
-                    <a href="{{ route('admin.units.index') }}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-5">
-            <div class="card card-custom bgi-no-repeat card-stretch gutter-b"
-                style="background-position: right top; background-size: 30% auto; background-image: url(assets/media/svg/shapes/abstract-3.svg)">
-                <div class="card-body">
-                    <span class="svg-icon svg-icon-2x svg-icon-warning">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g fill="none" fill-rule="evenodd">
-                                <rect width="24" height="24" />
-                                <path d="M12,2 L22,20 L2,20 L12,2 Z" fill="#000" opacity=".3" />
-                                <rect x="11" y="10" width="2" height="5" rx="1" fill="#000" />
-                                <rect x="11" y="16" width="2" height="2" rx="1" fill="#000" />
-                            </g>
-                        </svg>
-                    </span>
-                    <span class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-0 mt-6 d-block"
-                        data-count="{{ $kpiContractsNearExpiry ?? 0 }}">{{ $kpiContractsNearExpiry ?? 0 }}</span>
-                    <span class="font-weight-bold text-muted font-size-sm">عقود قريبة الانتهاء</span>
-                    <a href="{{ route('admin.contracts.index') }}" class="stretched-link"></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-5">
-            <div class="card card-custom bgi-no-repeat card-stretch gutter-b"
-                style="background-position: right top; background-size: 30% auto; background-image: url(assets/media/svg/shapes/abstract-5.svg)">
-                <div class="card-body">
-                    <span class="svg-icon svg-icon-2x svg-icon-success">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <g fill="none" fill-rule="evenodd">
-                                <rect width="24" height="24" />
-                                <path d="M12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9z" fill="#000"
-                                    opacity=".3" />
-                                <path d="M10 14l-2-2 1.414-1.414L10 11.172l4.586-4.586L16 8l-6 6z" fill="#000" />
-                            </g>
-                        </svg>
-                    </span>
-                    <span
-                        class="card-title font-weight-bolder text-dark-75 font-size-h2 mb-0 mt-6 d-block">{{ number_format((float) ($kpiIncomeThisMonth ?? 0), 2) }}</span>
-                    <span class="font-weight-bold text-muted font-size-sm">دخل هذا الشهر</span>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row">
-        <div class="col-lg-6">
-            <!--begin::Card-->
-            <div class="card card-custom gutter-b">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h3 class="card-label">إحصائيات الدخل والمصروفات (آخر 12 شهر)</h3>
+                <div class="mt-6 mt-md-0 text-right">
+                    <div class="d-flex align-items-center justify-content-end mb-4">
+                        <span class="text-muted mr-3">صافي التدفق آخر 12 شهر</span>
+                        <span class="badge badge-{{ $financeTotals['net'] >= 0 ? 'success' : 'danger' }} font-weight-bold px-4 py-3">
+                            {{ number_format($financeTotals['net'], 2) }} {{ $currency }}
+                        </span>
                     </div>
-                </div>
-                <div class="card-body">
-                    <!--begin::Chart-->
-                    <div id="chart_5"></div>
-                    <!--end::Chart-->
-                </div>
-            </div>
-            <!--end::Card-->
-        </div>
-
-        <div class="col-lg-6">
-            <!--begin::Card-->
-            <div class="card card-custom gutter-b">
-                <div class="card-header">
-                    <div class="card-title">
-                        <h3 class="card-label">حالة الإشغال للوحدات</h3>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <!--begin::Chart-->
-                    <div id="chart_12" class="d-flex justify-content-center"></div>
-                    <!--end::Chart-->
+                    <a href="{{ route('admin.contracts.index') }}" class="btn btn-light-primary btn-sm px-6">
+                        <i class="la la-file-invoice-dollar ml-2"></i>إدارة العقود
+                    </a>
+                    <a href="{{ route('admin.expenses.index') }}" class="btn btn-outline-light btn-sm px-6 ml-2">
+                        <i class="la la-receipt ml-2"></i>سجل المصروفات
+                    </a>
                 </div>
             </div>
-            <!--end::Card-->
         </div>
     </div>
 
+    <!-- KPI Cards -->
+    <div class="row g-6 g-xl-9">
+        @foreach($kpiCards as $card)
+            <div class="col-sm-6 col-xl-3">
+                <div class="card card-custom shadow-sm hover-elevate-up h-100">
+                    <div class="card-body d-flex">
+                        <div class="mr-4">
+                            <span class="symbol symbol-50 symbol-light-{{ $card['color'] }}">
+                                <span class="symbol-label">
+                                    <i class="{{ $card['icon'] }} text-{{ $card['color'] }} font-size-h3"></i>
+                                </span>
+                            </span>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span class="text-dark font-weight-bolder font-size-h4 mb-1">{{ $card['value'] }}</span>
+                            <span class="text-muted font-weight-bold">{{ $card['title'] }}</span>
+                            <span class="text-muted font-size-sm mt-2">{{ $card['description'] }}</span>
+                            <a href="{{ $card['link'] }}" class="text-{{ $card['color'] }} font-weight-bolder font-size-sm mt-4">
+                                التفاصيل
+                                <i class="la la-angle-left mr-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Charts & Occupancy -->
+    <div class="row g-6 g-xl-9 mt-1">
+        <div class="col-xl-8">
+            <div class="card card-custom shadow-sm h-100">
+                <div class="card-header border-0 py-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">تدفق الإيرادات والمصروفات</span>
+                        <span class="text-muted mt-3 font-size-sm">آخر 12 شهرًا</span>
+                    </h3>
+                    <div class="card-toolbar">
+                        <div class="d-flex flex-column text-right">
+                            <span class="text-muted font-weight-bold">إجمالي الدخل</span>
+                            <span class="text-dark font-weight-bolder">{{ number_format($financeTotals['income'], 2) }} {{ $currency }}</span>
+                        </div>
+                        <div class="d-flex flex-column text-right ml-6">
+                            <span class="text-muted font-weight-bold">إجمالي المصروف</span>
+                            <span class="text-dark font-weight-bolder">{{ number_format($financeTotals['expenses'], 2) }} {{ $currency }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="dashboard_finance_chart" style="min-height: 340px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card card-custom shadow-sm h-100">
+                <div class="card-header border-0 py-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">نسبة الإشغال الحالية</span>
+                        <span class="text-muted mt-3 font-size-sm">تحليل سريع لحالة الوحدات</span>
+                    </h3>
+                </div>
+                <div class="card-body pt-0">
+                    <div id="dashboard_occupancy_chart" style="min-height: 280px;"></div>
+                    <div class="mt-8">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="text-muted font-weight-bold">الوحدات المشغولة</span>
+                            <span class="font-weight-bolder text-dark">{{ $occupancyRate }}%</span>
+                        </div>
+                        <div class="progress progress-xs mb-5">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $occupancyRate }}%;"></div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="text-muted font-weight-bold">الوحدات الشاغرة</span>
+                            <span class="font-weight-bolder text-dark">{{ $vacancyRate }}%</span>
+                        </div>
+                        <div class="progress progress-xs mb-5">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ $vacancyRate }}%;"></div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="text-muted font-weight-bold">وحدات تحت الصيانة</span>
+                            <span class="font-weight-bolder text-dark">{{ $maintenanceRate }}%</span>
+                        </div>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $maintenanceRate }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lists -->
+    <div class="row g-6 g-xl-9 mt-1">
+        <div class="col-xl-4">
+            <div class="card card-custom shadow-sm h-100">
+                <div class="card-header border-0 py-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">أقرب العقود انتهاءً</span>
+                        <span class="text-muted mt-3 font-size-sm">تابع فترات التجديد القادمة</span>
+                    </h3>
+                    <div class="card-toolbar">
+                        <a href="{{ route('admin.contracts.index') }}" class="btn btn-sm btn-light-primary font-weight-bolder">
+                            عرض الكل
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    @forelse($nearExpiringContractsList as $contract)
+                        <div class="d-flex align-items-center py-3 border-bottom border-light">
+                            <div class="symbol symbol-45 symbol-light-warning">
+                                <span class="symbol-label">
+                                    <i class="la la-file-contract text-warning font-size-h4"></i>
+                                </span>
+                            </div>
+                            <div class="ml-4 flex-grow-1">
+                                <a href="{{ route('admin.contracts.edit', $contract->id) }}" class="text-dark font-weight-bolder font-size-lg">
+                                    {{ $contract->contract_no ?? 'بدون رقم' }}
+                                </a>
+                                <div class="text-muted font-size-sm mt-1">
+                                    {{ $contract->tenant?->full_name ?? 'مستأجر غير محدد' }} • {{ $contract->unit?->name ?? 'وحدة غير محددة' }}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="badge badge-light-danger font-weight-bold mb-2">
+                                    {{ optional($contract->end_date)->format('d M Y') }}
+                                </span>
+                                <div class="text-muted font-size-sm">
+                                    {{ number_format($contract->rent_amount ?? 0, 2) }} {{ $currency }}
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-10 text-muted">
+                            لا توجد عقود قريبة الانتهاء.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card card-custom shadow-sm h-100">
+                <div class="card-header border-0 py-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">آخر المدفوعات المستلمة</span>
+                        <span class="text-muted mt-3 font-size-sm">إجمالي المدفوعات المكتملة مؤخراً</span>
+                    </h3>
+                </div>
+                <div class="card-body pt-0">
+                    @forelse($recentPayments as $payment)
+                        <div class="d-flex align-items-center py-3 border-bottom border-light">
+                            <div class="symbol symbol-45 symbol-light-success">
+                                <span class="symbol-label">
+                                    <i class="la la-credit-card text-success font-size-h4"></i>
+                                </span>
+                            </div>
+                            <div class="ml-4 flex-grow-1">
+                                <span class="text-dark font-weight-bolder">
+                                    {{ number_format($payment->amount_paid, 2) }} {{ $currency }}
+                                </span>
+                                <div class="text-muted font-size-sm mt-1">
+                                    {{ $payment->tenant?->full_name ?? 'مستأجر' }} • {{ $payment->property?->name ?? 'عقار غير محدد' }}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="badge badge-light-success font-weight-bold">
+                                    {{ optional($payment->paid_at)->format('d M Y') ?? '--' }}
+                                </span>
+                                @php
+                                    $methodKey = strtolower($payment->method?->value ?? (is_string($payment->method) ? $payment->method : 'cash'));
+                                @endphp
+                                <div class="text-muted font-size-sm mt-1">
+                                    {{ __('contract_payments.methods.' . $methodKey) }}
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-10 text-muted">
+                            لا توجد مدفوعات مسجلة مؤخراً.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="card card-custom shadow-sm h-100">
+                <div class="card-header border-0 py-5">
+                    <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">آخر المصروفات المسجلة</span>
+                        <span class="text-muted mt-3 font-size-sm">راقب الصرف التشغيلي أولاً بأول</span>
+                    </h3>
+                </div>
+                <div class="card-body pt-0">
+                    @forelse($recentExpenses as $expense)
+                        <div class="d-flex align-items-center py-3 border-bottom border-light">
+                            <div class="symbol symbol-45 symbol-light-danger">
+                                <span class="symbol-label">
+                                    <i class="la la-file-invoice-dollar text-danger font-size-h4"></i>
+                                </span>
+                            </div>
+                            <div class="ml-4 flex-grow-1">
+                                <span class="text-dark font-weight-bolder">
+                                    {{ $expense->title ?? 'مصروف' }}
+                                </span>
+                                <div class="text-muted font-size-sm mt-1">
+                                    {{ $expense->property?->name ?? 'عقار غير محدد' }} • {{ $expense->category ?? 'غير مصنف' }}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="badge badge-light-danger font-weight-bold">
+                                    {{ number_format($expense->amount, 2) }} {{ $currency }}
+                                </span>
+                                <div class="text-muted font-size-sm mt-1">
+                                    {{ optional($expense->date)->format('d M Y') ?? '--' }}
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="text-center py-10 text-muted">
+                            لا توجد مصروفات حديثة.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
 @push('scripts')
-    <script src="{{asset('admin/assets/js/pages/features/charts/apexcharts.js') }}"></script>
+    <script src="{{ asset('admin/assets/js/pages/features/charts/apexcharts.js') }}"></script>
     <script>
-        (function() {
-            if (typeof ApexCharts === 'undefined' || typeof KTAppSettings === 'undefined') return;
+        (function () {
+            if (typeof ApexCharts === 'undefined') {
+                return;
+            }
 
-            var colors = KTAppSettings.colors.theme.base || {};
-            var primary = colors.primary || '#6993FF';
-            var success = colors.success || '#1BC5BD';
-            var info    = colors.info    || '#8950FC';
-            var warning = colors.warning || '#FFA800';
-            var danger  = colors.danger  || '#F64E60';
+            const months = @json($chart['months'] ?? []);
+            const income = @json($chart['income'] ?? []);
+            const expenses = @json($chart['expenses'] ?? []);
+            const currency = @json($currency ?? 'SAR');
 
-            var months   = @json($chart['months'] ?? []);
-            var income   = @json($chart['income'] ?? []);
-            var expenses = @json($chart['expenses'] ?? []);
-            var currency = @json($currency ?? 'SAR');
-
-            var net = income.map(function(v, i){
-                var e = (typeof expenses[i] !== 'undefined') ? expenses[i] : 0;
-                return Number((Number(v) - Number(e)).toFixed(2));
+            const net = income.map(function (value, index) {
+                const expense = (typeof expenses[index] !== 'undefined') ? expenses[index] : 0;
+                return Number((Number(value) - Number(expense)).toFixed(2));
             });
 
-            var mixedOptions = {
+            const financeChart = new ApexCharts(document.querySelector('#dashboard_finance_chart'), {
                 series: [
-                    { name: 'الدخل',     type: 'column', data: income },
-                    { name: 'المصروفات', type: 'column', data: expenses },
-                    { name: 'الصافي',     type: 'line',   data: net }
+                    {name: 'الدخل', type: 'column', data: income},
+                    {name: 'المصروفات', type: 'column', data: expenses},
+                    {name: 'الصافي', type: 'line', data: net}
                 ],
-                chart: { height: 350, type: 'line', stacked: false },
-                dataLabels: { enabled: false },
-                stroke: { width: [1, 1, 3] },
-                xaxis: { categories: months },
-                yaxis: {
-                    title: { text: currency },
-                    labels: { formatter: function (val) { return Number(val).toLocaleString(undefined, { maximumFractionDigits: 0 }); } }
-                },
+                chart: {type: 'line', height: 360, stacked: false, toolbar: {show: false}},
+                dataLabels: {enabled: false},
+                stroke: {width: [1, 1, 3]},
+                xaxis: {categories: months},
+                yaxis: [{
+                    title: {text: currency},
+                    labels: {
+                        formatter: function (val) {
+                            return Number(val).toLocaleString(undefined, {maximumFractionDigits: 0});
+                        }
+                    }
+                }],
                 tooltip: {
-                    y: { formatter: function (val) { return Number(val).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' ' + currency; } }
-                },
-                legend: { position: 'top', horizontalAlign: 'center' },
-                colors: [primary, danger, success]
-            };
-
-            var chartMixed = new ApexCharts(document.querySelector('#chart_5'), mixedOptions);
-            chartMixed.render();
-
-            var occLabels = @json($chart['occupancy_labels'] ?? []);
-            var occData   = @json($chart['occupancy_data'] ?? []);
-
-            var pieOptions = {
-                series: occData,
-                chart: { type: 'pie', width: '100%' },
-                labels: occLabels,
-                legend: { position: 'bottom' },
-                dataLabels: {
-                    formatter: function (val, opts) {
-                        var v = opts.w.config.series[opts.seriesIndex] || 0;
-                        return v.toLocaleString();
+                    shared: true,
+                    intersect: false,
+                    y: {
+                        formatter: function (val) {
+                            return Number(val).toLocaleString(undefined, {maximumFractionDigits: 2}) + ' ' + currency;
+                        }
                     }
                 },
-                colors: [success, primary, warning]
-            };
+                legend: {position: 'top'},
+                colors: ['#3699FF', '#F64E60', '#1BC5BD'],
+                grid: {strokeDashArray: 4}
+            });
+            financeChart.render();
 
-            var chartPie = new ApexCharts(document.querySelector('#chart_12'), pieOptions);
-            chartPie.render();
+            const occLabels = @json($chart['occupancy_labels'] ?? []);
+            const occData = @json($chart['occupancy_data'] ?? []);
+
+            const occupancyChart = new ApexCharts(document.querySelector('#dashboard_occupancy_chart'), {
+                series: occData,
+                chart: {type: 'donut', width: '100%', height: 300},
+                labels: occLabels,
+                legend: {position: 'bottom'},
+                dataLabels: {
+                    formatter: function (val, opts) {
+                        const value = opts.w.config.series[opts.seriesIndex] || 0;
+                        return value.toLocaleString();
+                    }
+                },
+                colors: ['#1BC5BD', '#3699FF', '#FFA800'],
+                stroke: {colors: ['#ffffff']},
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            labels: {
+                                show: true,
+                                name: {show: true, fontSize: '14px', fontWeight: 600},
+                                value: {show: true, fontSize: '16px', fontWeight: 700, formatter: function (val) {return Number(val).toLocaleString();}},
+                                total: {
+                                    show: true,
+                                    label: 'إجمالي الوحدات',
+                                    formatter: function () {
+                                        return occData.reduce((a, b) => a + b, 0).toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            occupancyChart.render();
         })();
     </script>
 @endpush
+
