@@ -17,6 +17,11 @@ class PermissionsDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
+            ->editColumn('name', function (Permission $p) {
+                $key = 'permissions.' . $p->name;
+                $translated = __($key);
+                return $translated !== $key ? $translated : $p->name;
+            })
             ->editColumn('created_at', fn(Permission $p) => optional($p->created_at)->format('Y-m-d'))
             ->addColumn('actions', function (Permission $p) {
                 return view('admin.layouts.partials._actions', [
