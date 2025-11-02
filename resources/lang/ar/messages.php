@@ -20,5 +20,10 @@ return [
     'current_files' => 'الملفات الحالية',
     'not_available' => 'لا توجد بيانات',
     'all' => 'الكل',
+    'dropzone_title' => 'اسحب الملفات إلى هنا أو انقر للاختيار',
+    'dropzone_default_hint' => 'بإمكانك رفع ملف واحد أو عدة ملفات في آن واحد',
+    'choose_files' => 'اختر الملفات',
+    'accept_images' => 'ملفات الصور',
+    'accept_docs' => 'مستندات وورد',
 ];
 

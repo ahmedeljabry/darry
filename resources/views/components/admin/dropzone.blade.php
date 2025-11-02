@@ -22,17 +22,49 @@
     );
 @endphp
 
+@php
+    $acceptLabel = $accept
+        ? collect(explode(',', $accept))
+            ->map(fn ($type) => trim($type))
+            ->map(function ($type) {
+                return match ($type) {
+                    'image/*' => __('messages.accept_images') ?? 'ملفات الصور',
+                    'application/pdf' => 'PDF',
+                    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => __('messages.accept_docs') ?? 'مستندات Word',
+                    default => strtoupper($type),
+                };
+            })
+            ->join('، ')
+        : null;
+@endphp
+
 <x-admin.field :name="$name" :label="$label" :required="$required" :help="$help">
-    <input
-        type="file"
-        id="{{ $inputId }}"
-        name="{{ $name }}@if($multiple)[]@endif"
-        @if($multiple) multiple @endif
-        @if($accept) accept="{{ $accept }}" @endif
-        {{ $required ? 'required' : '' }}
-        {{ $attributes->merge(['class' => 'form-control form-control-lg form-control-solid js-dropzone-input']) }}
-        data-preview="#{{ $previewId }}"
-    />
+    <div class="az-dropzone" data-input="{{ $inputId }}">
+        <input
+            type="file"
+            id="{{ $inputId }}"
+            name="{{ $name }}@if($multiple)[]@endif"
+            @if($multiple) multiple @endif
+            @if($accept) accept="{{ $accept }}" @endif
+            {{ $required ? 'required' : '' }}
+            {{ $attributes->merge(['class' => 'd-none js-dropzone-input']) }}
+            data-preview="#{{ $previewId }}"
+        />
+        <div class="az-dropzone__content">
+            <div class="az-dropzone__icon">
+                <i class="la la-cloud-upload-alt"></i>
+            </div>
+            <div class="az-dropzone__text">
+                <span class="az-dropzone__title">{{ __('messages.dropzone_title') ?? 'اسحب الملفات إلى هنا أو انقر للاختيار' }}</span>
+                <span class="az-dropzone__hint">
+                    {{ $acceptLabel ?? __('messages.dropzone_default_hint') ?? 'بإمكانك رفع عدة ملفات دفعة واحدة' }}
+                </span>
+                <button type="button" class="btn btn-sm btn-light-primary mt-3">
+                    <i class="la la-folder-open ms-1"></i>{{ __('messages.choose_files') ?? 'اختر الملفات' }}
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div class="mt-4">
         @if($existingFiles->isNotEmpty())
@@ -114,9 +146,113 @@
                     input.addEventListener('change', function (event) {
                         renderPreview(event.target.files);
                     });
+
+                    const zone = input.closest('.az-dropzone');
+                    if (!zone) {
+                        return;
+                    }
+
+                    const openDialog = () => input.click();
+                    zone.querySelector('.az-dropzone__content')?.addEventListener('click', openDialog);
+                    zone.addEventListener('click', function (event) {
+                        if (event.target === zone) {
+                            openDialog();
+                        }
+                    });
+
+                    const preventDefaults = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    };
+
+                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
+                        zone.addEventListener(eventName, preventDefaults, false);
+                    });
+
+                    ['dragenter', 'dragover'].forEach(function (eventName) {
+                        zone.addEventListener(eventName, function () {
+                            zone.classList.add('is-dragover');
+                        }, false);
+                    });
+
+                    ['dragleave', 'drop'].forEach(function (eventName) {
+                        zone.addEventListener(eventName, function () {
+                            zone.classList.remove('is-dragover');
+                        }, false);
+                    });
+
+                    zone.addEventListener('drop', function (e) {
+                        const files = e.dataTransfer.files;
+                        if (!files || !files.length) {
+                            return;
+                        }
+
+                        const dataTransfer = new DataTransfer();
+                        const limit = input.multiple ? files.length : 1;
+                        for (let i = 0; i < limit; i++) {
+                            dataTransfer.items.add(files[i]);
+                        }
+                        input.files = dataTransfer.files;
+                        input.dispatchEvent(new Event('change'));
+                    });
                 });
             });
         </script>
     @endpush
-@endonce
 
+    @push('styles')
+        <style>
+            .az-dropzone {
+                position: relative;
+                border: 2px dashed rgba(58, 87, 232, 0.3);
+                border-radius: 1rem;
+                background: rgba(58, 87, 232, 0.04);
+                transition: all 0.2s ease;
+                cursor: pointer;
+            }
+            .az-dropzone.is-dragover {
+                border-color: rgba(58, 87, 232, 0.7);
+                background: rgba(58, 87, 232, 0.08);
+                box-shadow: 0 0 0 0.35rem rgba(58, 87, 232, 0.1);
+            }
+            .az-dropzone__content {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1.5rem;
+                padding: 2.5rem 1.5rem;
+            }
+            .az-dropzone__icon {
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(58, 87, 232, 0.12);
+                color: #3A57E8;
+                font-size: 1.75rem;
+            }
+            .az-dropzone__text {
+                display: flex;
+                flex-direction: column;
+                gap: 0.35rem;
+                text-align: start;
+            }
+            .az-dropzone__title {
+                font-weight: 600;
+                color: #1E1E2D;
+            }
+            .az-dropzone__hint {
+                font-size: 0.9rem;
+                color: #7E8299;
+            }
+            .az-dropzone button.btn {
+                width: fit-content;
+            }
+            .dropzone-preview .border {
+                border-color: rgba(58, 87, 232, 0.25) !important;
+            }
+        </style>
+    @endpush
+@endonce
