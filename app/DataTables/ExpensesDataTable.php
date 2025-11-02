@@ -27,6 +27,7 @@ class ExpensesDataTable extends DataTable
                     'deleteRoute' => route('admin.expenses.destroy', $e->id),
                 ])->render();
             })
+            ->editColumn('date', fn(Expense $e) => optional($e->date)->format('Y-m-d'))
             ->rawColumns(['actions'])
             ->setRowId('id');
     }
