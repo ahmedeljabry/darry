@@ -47,6 +47,69 @@
             </li>
             @endcanany
 
+            @canany(['countries.view','countries.create','governorates.view','governorates.create','states.view','states.create'])
+            <li class="menu-item menu-item-submenu {{ request()->is('admin/countries*') || request()->is('admin/governorates*') || request()->is('admin/states*') ? 'menu-item-open menu-item-here' : '' }}" data-menu-toggle="hover" aria-haspopup="true">
+                <a href="javascript:;" class="menu-link menu-toggle">
+                    <span class="svg-icon menu-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24"><g fill="none"><path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zm0 2a7 7 0 1 0 0 14 7 7 0 0 0 0-14z" fill="#000" opacity=".3"/><path d="M12 5a1 1 0 0 1 1 1v12a1 1 0 0 1-2 0V6a1 1 0 0 1 1-1z" fill="#000"/><path d="M18 12a1 1 0 0 1-1 1H7a1 1 0 1 1 0-2h10a1 1 0 0 1 1 1z" fill="#000"/></g></svg>
+                    </span>
+                    <span class="menu-text">{{ __('menu.locations') }}</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="menu-submenu">
+                    <ul class="menu-subnav">
+                        @can('countries.view')
+                        <li class="menu-item {{ request()->routeIs('admin.countries.index') ? 'menu-item-active' : '' }}">
+                            <a href="{{ $r('admin.countries.index','admin/countries') }}" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot"><span></span></i>
+                                <span class="menu-text">{{ __('menu.countries_list') }}</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('countries.create')
+                        <li class="menu-item {{ request()->routeIs('admin.countries.create') ? 'menu-item-active' : '' }}">
+                            <a href="{{ $r('admin.countries.create','admin/countries/create') }}" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot"><span></span></i>
+                                <span class="menu-text">{{ __('menu.countries_create') }}</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('governorates.view')
+                        <li class="menu-item {{ request()->routeIs('admin.governorates.index') ? 'menu-item-active' : '' }}">
+                            <a href="{{ $r('admin.governorates.index','admin/governorates') }}" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot"><span></span></i>
+                                <span class="menu-text">{{ __('menu.governorates_list') }}</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('governorates.create')
+                        <li class="menu-item {{ request()->routeIs('admin.governorates.create') ? 'menu-item-active' : '' }}">
+                            <a href="{{ $r('admin.governorates.create','admin/governorates/create') }}" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot"><span></span></i>
+                                <span class="menu-text">{{ __('menu.governorates_create') }}</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('states.view')
+                        <li class="menu-item {{ request()->routeIs('admin.states.index') ? 'menu-item-active' : '' }}">
+                            <a href="{{ $r('admin.states.index','admin/states') }}" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot"><span></span></i>
+                                <span class="menu-text">{{ __('menu.states_list') }}</span>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('states.create')
+                        <li class="menu-item {{ request()->routeIs('admin.states.create') ? 'menu-item-active' : '' }}">
+                            <a href="{{ $r('admin.states.create','admin/states/create') }}" class="menu-link">
+                                <i class="menu-bullet menu-bullet-dot"><span></span></i>
+                                <span class="menu-text">{{ __('menu.states_create') }}</span>
+                            </a>
+                        </li>
+                        @endcan
+                    </ul>
+                </div>
+            </li>
+            @endcanany
             @canany(['owners.view','owners.create','owners.update','owners.delete'])
             <li class="menu-item menu-item-submenu {{ request()->is('admin/owners*') ? 'menu-item-open menu-item-here' : '' }}" data-menu-toggle="hover" aria-haspopup="true">
                 <a href="javascript:;" class="menu-link menu-toggle">
@@ -262,6 +325,5 @@
         </ul>
     </div>
 </div>
-
 
 

@@ -16,8 +16,11 @@ class UpdatePropertyRequest extends FormRequest
     {
         return [
             'name' => ['required','string','max:255'],
+            'country_id' => ['nullable','integer','exists:countries,id'],
             'country' => ['nullable','string','max:190'],
+            'governorate_id' => ['nullable','integer','exists:governorates,id'],
             'state' => ['nullable','string','max:190'],
+            'state_id' => ['nullable','integer','exists:states,id'],
             'governorate' => ['nullable','string','max:190'],
             'city' => ['nullable','string','max:190'],
             'coordinates' => ['nullable','string','max:255'],

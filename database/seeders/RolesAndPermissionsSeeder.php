@@ -28,6 +28,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'expenses'    => ['view','create','update','delete','show'],
             'contracts'   => ['view','create','update','delete','show'],
             'contract_payments' => ['view','create','update','delete','show'],
+            'countries'   => ['view','create','update','delete'],
+            'governorates'=> ['view','create','update','delete'],
+            'states'      => ['view','create','update','delete'],
         ];
 
         $all = [];

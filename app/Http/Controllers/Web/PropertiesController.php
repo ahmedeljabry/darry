@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Facility;
 use App\Models\Unit;
+use App\Models\Country;
+use App\Models\Governorate;
+use App\Models\State;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\Properties\StorePropertyRequest;
 use App\Http\Requests\Properties\UpdatePropertyRequest;
@@ -27,7 +30,9 @@ class PropertiesController extends Controller
     public function create(): View
     {
         $facilities = Facility::query()->pluck('name','id');
-        return view('admin.properties.create', compact('facilities'));
+        $countries = Country::query()->orderBy('name')->pluck('name','id')->toArray();
+
+        return view('admin.properties.create', compact('facilities','countries'));
     }
 
     public function show(Property $property): View
@@ -70,6 +75,8 @@ class PropertiesController extends Controller
             $data['images'] = $paths;
         }
 
+        $data = $this->resolveLocationValues($data);
+
         $property = Property::create($data);
         $property->facilities()->sync($data['facilities'] ?? []);
 
@@ -79,7 +86,38 @@ class PropertiesController extends Controller
     public function edit(Property $property): View
     {
         $facilities = Facility::query()->pluck('name','id');
-        return view('admin.properties.edit', compact('property','facilities'));
+        $countries = Country::query()->orderBy('name')->pluck('name','id')->toArray();
+
+        $selectedCountryId = $property->country ? Country::query()->where('name', $property->country)->value('id') : null;
+        $governorates = $selectedCountryId
+            ? Governorate::query()->where('country_id', $selectedCountryId)->orderBy('name')->pluck('name','id')->toArray()
+            : [];
+        $selectedGovernorateId = $property->governorate
+            ? Governorate::query()
+                ->where('country_id', $selectedCountryId)
+                ->where('name', $property->governorate)
+                ->value('id')
+            : null;
+        $states = $selectedGovernorateId
+            ? State::query()->where('governorate_id', $selectedGovernorateId)->orderBy('name')->pluck('name','id')->toArray()
+            : [];
+        $selectedStateId = $property->state
+            ? State::query()
+                ->where('governorate_id', $selectedGovernorateId)
+                ->where('name', $property->state)
+                ->value('id')
+            : null;
+
+        return view('admin.properties.edit', [
+            'property' => $property,
+            'facilities' => $facilities,
+            'countries' => $countries,
+            'governorates' => $governorates,
+            'states' => $states,
+            'selectedCountryId' => $selectedCountryId,
+            'selectedGovernorateId' => $selectedGovernorateId,
+            'selectedStateId' => $selectedStateId,
+        ]);
     }
 
     public function update(UpdatePropertyRequest $request, Property $property): RedirectResponse
@@ -120,6 +158,8 @@ class PropertiesController extends Controller
         }
         $data['images'] = $currentImages;
 
+        $data = $this->resolveLocationValues($data);
+
         $property->update($data);
         $property->facilities()->sync($data['facilities'] ?? []);
 
@@ -137,5 +177,32 @@ class PropertiesController extends Controller
         }
         $property->delete();
         return redirect()->route('admin.properties.index')->with('status', __('messages.success_deleted'));
+    }
+
+    private function resolveLocationValues(array $data): array
+    {
+        $countryId = $data['country_id'] ?? null;
+        $governorateId = $data['governorate_id'] ?? null;
+        $stateId = $data['state_id'] ?? null;
+
+        if ($countryId) {
+            if ($country = Country::query()->find($countryId)) {
+                $data['country'] = $country->name;
+            }
+        }
+        if ($governorateId) {
+            if ($governorate = Governorate::query()->find($governorateId)) {
+                $data['governorate'] = $governorate->name;
+            }
+        }
+        if ($stateId) {
+            if ($state = State::query()->find($stateId)) {
+                $data['state'] = $state->name;
+            }
+        }
+
+        unset($data['country_id'], $data['governorate_id'], $data['state_id']);
+
+        return $data;
     }
 }

@@ -85,4 +85,19 @@ return [
 
     'settings.view' => 'عرض الإعدادات',
     'settings.update' => 'تعديل الإعدادات',
+
+    'countries.view' => 'عرض الدول',
+    'countries.create' => 'إضافة دولة',
+    'countries.update' => 'تعديل دولة',
+    'countries.delete' => 'حذف دولة',
+
+    'governorates.view' => 'عرض المحافظات',
+    'governorates.create' => 'إضافة محافظة',
+    'governorates.update' => 'تعديل محافظة',
+    'governorates.delete' => 'حذف محافظة',
+
+    'states.view' => 'عرض المناطق',
+    'states.create' => 'إضافة منطقة',
+    'states.update' => 'تعديل منطقة',
+    'states.delete' => 'حذف منطقة',
 ];

@@ -3,35 +3,40 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use Illuminate\Support\Arr;
+use App\Models\Country;
+use App\Models\Governorate;
+use App\Models\State;
 
 class Place
 {
     public static function countries(): array
     {
-        return config('places.countries', []);
+        return Country::query()->orderBy('name')->pluck('name', 'id')->toArray();
     }
 
-    public static function governorates(?string $country = null): array
+    public static function governorates(?int $countryId = null): array
     {
-        $governorates = config('places.governorates', []);
-        if ($country && isset($governorates[$country])) {
-            return $governorates[$country];
+        if (!$countryId) {
+            return [];
         }
 
-        $first = Arr::first($governorates, fn ($value) => is_array($value));
-        return is_array($first) ? $first : [];
+        return Governorate::query()
+            ->where('country_id', $countryId)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
     }
 
-    public static function states(?string $country = null): array
+    public static function states(?int $governorateId = null): array
     {
-        $states = config('places.states', []);
-        if ($country && isset($states[$country])) {
-            return $states[$country];
+        if (!$governorateId) {
+            return [];
         }
 
-        $first = Arr::first($states, fn ($value) => is_array($value));
-        return is_array($first) ? $first : [];
+        return State::query()
+            ->where('governorate_id', $governorateId)
+            ->orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
     }
 }
-

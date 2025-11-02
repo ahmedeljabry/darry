@@ -21,6 +21,15 @@ return [
     'facilities' => 'المرافق',
     'facilities_list' => 'قائمة المرافق',
     'facilities_create' => 'إضافة مرفق',
+
+    // Locations
+    'locations' => 'إدارة المواقع',
+    'countries_list' => 'الدول',
+    'countries_create' => 'إضافة دولة',
+    'governorates_list' => 'المحافظات',
+    'governorates_create' => 'إضافة محافظة',
+    'states_list' => 'المناطق / المدن',
+    'states_create' => 'إضافة منطقة',
     
     // Tenants
     'tenants' => 'المستأجرون',

@@ -9,6 +9,10 @@ use App\Http\Controllers\Web\PaymentsController as WebPaymentsController;
 use App\Http\Controllers\Web\UsersController as WebUsersController;
 use App\Http\Controllers\Web\SettingsController as WebSettingsController;
 use App\Http\Controllers\Web\PropertyFloorsController;
+use App\Http\Controllers\Web\CountriesController;
+use App\Http\Controllers\Web\GovernoratesController;
+use App\Http\Controllers\Web\StatesController;
+use App\Http\Controllers\Web\LocationController;
 
 
 Route::get('/' , function () {
@@ -39,6 +43,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::resource('contract-payments', \App\Http\Controllers\Web\ContractPaymentsController::class);
     Route::resource('owners', \App\Http\Controllers\Web\OwnersController::class);
     Route::resource('facilities', \App\Http\Controllers\Web\FacilitiesController::class);
+    Route::resource('countries', CountriesController::class)->except(['show']);
+    Route::resource('governorates', GovernoratesController::class)->except(['show']);
+    Route::resource('states', StatesController::class)->except(['show']);
+    Route::prefix('locations')->name('locations.')->group(function () {
+        Route::get('countries/{country}/governorates', [LocationController::class, 'governorates'])->name('countries.governorates');
+        Route::get('governorates/{governorate}/states', [LocationController::class, 'states'])->name('governorates.states');
+    });
     Route::resource('roles', \App\Http\Controllers\Web\RolesController::class)->except(['show']);
     
     Route::resource('expenses', \App\Http\Controllers\Web\ExpensesController::class);
@@ -47,6 +58,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('settings', [WebSettingsController::class, 'index'])->name('settings.index');
     Route::post('settings', [WebSettingsController::class, 'update'])->name('settings.update');
 });
+
+
 
 
 
