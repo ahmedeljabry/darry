@@ -19,5 +19,6 @@ return [
     'edit' => 'تعديل',
     'current_files' => 'الملفات الحالية',
     'not_available' => 'لا توجد بيانات',
+    'all' => 'الكل',
 ];
 

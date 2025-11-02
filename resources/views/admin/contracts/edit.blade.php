@@ -26,12 +26,7 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const unitsData = @json($units->map(fn($unit) => [
-                'id' => $unit->id,
-                'name' => $unit->name,
-                'property_id' => $unit->property_id,
-                'rent_amount' => $unit->rent_amount,
-            ])->values());
+            const unitsData = @json($unitsPayload);
 
             const propertySelect = $('#contract_property_id');
             const unitSelect = $('#contract_unit_id');
@@ -40,8 +35,8 @@
             const durationInput = document.getElementById('duration_months');
             const endInput = document.getElementById('contract_end_date');
 
-            const initialProperty = '{{ old('property_id', $contract->property_id) }}';
-            const initialUnit = '{{ old('unit_id', $contract->unit_id) }}';
+            const initialProperty = @js(old('property_id', $contract->property_id));
+            const initialUnit = @js(old('unit_id', $contract->unit_id));
 
             function refreshUnits(propertyId, preselected = '') {
                 const placeholder = unitSelect.data('placeholder') || '— اختر —';
@@ -105,9 +100,8 @@
                 }
             });
 
-            if (initialProperty) {
-                propertySelect.val(initialProperty);
-            }
+            const defaultProperty = initialProperty || propertySelect.val();
+            propertySelect.val(defaultProperty);
             propertySelect.trigger('change', [initialUnit]);
             propertySelect.trigger('change.select2');
 

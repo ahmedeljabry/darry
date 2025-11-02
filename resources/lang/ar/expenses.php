@@ -9,5 +9,5 @@ return [
     'property' => 'العقار',
     'unit' => 'الوحدة',
     'category' => 'التصنيف',
+    'title_field' => 'عنوان المصروف',
 ];
-

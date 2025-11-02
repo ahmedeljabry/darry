@@ -52,7 +52,15 @@ class ContractsDataTable extends DataTable
             ->setTableId('contracts-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
+            ->addTableClass('table table-row-dashed table-hover align-middle gy-4')
             ->orderBy(1)
+            ->parameters([
+                'responsive' => true,
+                'autoWidth' => false,
+                'stateSave' => true,
+                'pageLength' => 10,
+                'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, __('messages.all') ?? 'الكل']],
+            ])
             ->buttons([
                 Button::make('excel'), Button::make('csv'), Button::make('pdf'), Button::make('print')
             ]);
@@ -79,4 +87,3 @@ class ContractsDataTable extends DataTable
         return 'Contracts_' . date('YmdHis');
     }
 }
-

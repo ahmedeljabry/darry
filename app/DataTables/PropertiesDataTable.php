@@ -49,6 +49,14 @@ class PropertiesDataTable extends DataTable
             ->setTableId('properties-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
+            ->addTableClass('table table-row-dashed table-hover align-middle gy-4')
+            ->parameters([
+                'responsive' => true,
+                'autoWidth' => false,
+                'stateSave' => true,
+                'pageLength' => 10,
+                'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, __('messages.all') ?? 'الكل']],
+            ])
             ->orderBy(1)
             ->buttons([Button::make('excel'), Button::make('csv'), Button::make('pdf'), Button::make('print')]);
     }

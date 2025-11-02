@@ -85,8 +85,14 @@ class UnitsDataTable extends DataTable
             ->setTableId('units-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
+            ->addTableClass('table table-row-dashed table-hover align-middle gy-4')
             ->orderBy(1)
             ->parameters([
+                'responsive' => true,
+                'autoWidth' => false,
+                'stateSave' => true,
+                'pageLength' => 10,
+                'lengthMenu' => [[10, 25, 50, -1], [10, 25, 50, __('messages.all') ?? 'الكل']],
                 'destroy' => true,
             ])
             ->buttons(['excel','csv','pdf','print']);

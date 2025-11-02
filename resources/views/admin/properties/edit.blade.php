@@ -27,13 +27,17 @@
 
         <x-admin.input-solid name="area_sqm" type="number" :label="__('properties.area_sqm')" :value="old('area_sqm', $property->area_sqm)" min="0" />
 
-        <div class="row mb-6">
-            <label class="col-lg-4 col-form-label fw-bold fs-6">{{ __('properties.use_type') }}</label>
-            <div class="col-lg-8">
-                <x-admin.select-solid name="use_type" :label="__('properties.use_type')" :options="App\Domain\Enums\PropertyUseType::cases()" :value="old('use_type', $property->use_type?->value ?? $property->use_type)" :option-label="fn($u)=>__("properties.use_types.".$u->value)" :option-value="fn($u)=>$u->value" />
-                @error('use_type') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-            </div>
-        </div>
+        @php
+            $useTypeOptions = collect(App\Domain\Enums\PropertyUseType::cases())
+                ->mapWithKeys(fn($case) => [$case->value => __("properties.use_types." . $case->value)])
+                ->toArray();
+        @endphp
+        <x-admin.select-solid
+            name="use_type"
+            :label="__('properties.use_type')"
+            :options="$useTypeOptions"
+            :value="old('use_type', $property->use_type?->value ?? $property->use_type)"
+        />
 
         <x-admin.select-solid
             name="facilities[]"

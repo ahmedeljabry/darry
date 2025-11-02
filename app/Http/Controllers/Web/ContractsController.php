@@ -27,7 +27,20 @@ class ContractsController extends Controller
         $properties = Property::query()->pluck('name','id');
         $tenants = Tenant::query()->pluck('full_name','id');
         $units = Unit::query()->select('id','name','property_id','rent_amount')->get();
-        return view('admin.contracts.create', compact('properties','tenants','units'));
+        $unitsPayload = $units->map(static function (Unit $unit) {
+            return [
+                'id' => (string) $unit->id,
+                'name' => $unit->name,
+                'property_id' => (string) $unit->property_id,
+                'rent_amount' => $unit->rent_amount,
+            ];
+        })->values();
+        return view('admin.contracts.create', [
+            'properties' => $properties,
+            'tenants' => $tenants,
+            'units' => $units,
+            'unitsPayload' => $unitsPayload,
+        ]);
     }
 
     public function store(StoreContractRequest $request): RedirectResponse
@@ -53,7 +66,21 @@ class ContractsController extends Controller
         $properties = Property::query()->pluck('name','id');
         $tenants = Tenant::query()->pluck('full_name','id');
         $units = Unit::query()->select('id','name','property_id','rent_amount')->get();
-        return view('admin.contracts.edit', compact('contract','properties','tenants','units'));
+        $unitsPayload = $units->map(static function (Unit $unit) {
+            return [
+                'id' => (string) $unit->id,
+                'name' => $unit->name,
+                'property_id' => (string) $unit->property_id,
+                'rent_amount' => $unit->rent_amount,
+            ];
+        })->values();
+        return view('admin.contracts.edit', [
+            'contract' => $contract,
+            'properties' => $properties,
+            'tenants' => $tenants,
+            'units' => $units,
+            'unitsPayload' => $unitsPayload,
+        ]);
     }
 
     public function update(UpdateContractRequest $request, Contract $contract): RedirectResponse
