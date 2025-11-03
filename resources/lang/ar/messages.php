@@ -25,5 +25,6 @@ return [
     'choose_files' => 'اختر الملفات',
     'accept_images' => 'ملفات الصور',
     'accept_docs' => 'مستندات وورد',
+    'updated_at' => 'تاريخ التحديث',
 ];
 

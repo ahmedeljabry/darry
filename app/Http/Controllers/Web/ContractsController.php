@@ -24,7 +24,7 @@ class ContractsController extends Controller
 
     public function create(): View
     {
-        $properties = Property::query()->pluck('name','id');
+        $properties = Property::forCurrentUser()->pluck('name','id');
         $tenants = Tenant::query()->pluck('full_name','id');
         $units = Unit::query()->select('id','name','property_id','rent_amount')->get();
         $unitsPayload = $units->map(static function (Unit $unit) {
@@ -63,7 +63,7 @@ class ContractsController extends Controller
 
     public function edit(Contract $contract): View
     {
-        $properties = Property::query()->pluck('name','id');
+        $properties = Property::forCurrentUser()->pluck('name','id');
         $tenants = Tenant::query()->pluck('full_name','id');
         $units = Unit::query()->select('id','name','property_id','rent_amount')->get();
         $unitsPayload = $units->map(static function (Unit $unit) {

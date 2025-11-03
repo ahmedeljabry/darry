@@ -82,7 +82,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        $(function () {
             const countrySelect = document.querySelector('[data-role="country-select"]');
             const governorateSelect = document.querySelector('[data-role="governorate-select"]');
             const stateSelect = document.querySelector('[data-role="state-select"]');
@@ -107,66 +107,139 @@
             };
 
             const populateSelect = function (selectEl, items, fallbackPlaceholderKey) {
-                const current = selectEl.dataset.placeholder || placeholders[fallbackPlaceholderKey];
-                selectEl.innerHTML = `<option value="">${current}</option>`;
+                const $el = $(selectEl);
+                const current = selectEl.dataset.placeholder || placeholders[fallbackPlaceholderKey] || '';
+                const isMultiple = $el.prop('multiple');
+
+                $el.empty();
+
+                if (!isMultiple) {
+                    const placeholderOption = new Option(current, '', false, false);
+                    placeholderOption.dataset.placeholder = 'true';
+                    $el.append(placeholderOption);
+                }
+
                 items.forEach(function (item) {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = item.name;
-                    selectEl.appendChild(option);
+                    const option = new Option(item.name, item.id, false, false);
+                    $el.append(option);
                 });
+
+                if ($el.hasClass('select2-hidden-accessible')) {
+                    $el.trigger('change.select2');
+                }
+            };
+
+            const setSelectValue = function (selectEl, value, hiddenInput = null, triggerChange = true) {
+                const $el = $(selectEl);
+                const normalized = value === null || typeof value === 'undefined' ? '' : String(value);
+
+                $el.val(normalized);
+
+                if ($el.hasClass('select2-hidden-accessible')) {
+                    $el.trigger('change.select2');
+                }
+
+                if (triggerChange) {
+                    $el.trigger('change');
+                }
+
+                if (hiddenInput) {
+                    setSelectedName(selectEl, hiddenInput);
+                }
             };
 
             const fetchGovernorates = function (countryId, selectedValue = '') {
                 if (!countryId) {
                     populateSelect(governorateSelect, [], 'governorate');
                     populateSelect(stateSelect, [], 'state');
-                    $(governorateSelect).val('').trigger('change');
-                    $(stateSelect).val('').trigger('change');
-                    setSelectedName(governorateSelect, governorateNameInput);
-                    setSelectedName(stateSelect, stateNameInput);
+                    setSelectValue(governorateSelect, '', governorateNameInput, false);
+                    setSelectValue(stateSelect, '', stateNameInput, false);
                     return;
                 }
 
-                fetch(`{{ url('admin/locations/countries') }}/${countryId}/governorates`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
-                    .then(response => response.json())
+                fetch(`{{ url('admin/locations/countries') }}/${countryId}/governorates`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         populateSelect(governorateSelect, data.items || [], 'governorate');
-                        $(governorateSelect).val(selectedValue).trigger('change');
-                        setSelectedName(governorateSelect, governorateNameInput);
+                        setSelectValue(governorateSelect, selectedValue || '', governorateNameInput, !!(selectedValue || ''));
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch governorates', error);
                     });
             };
 
             const fetchStates = function (governorateId, selectedValue = '') {
                 if (!governorateId) {
                     populateSelect(stateSelect, [], 'state');
-                    $(stateSelect).val('').trigger('change');
-                    setSelectedName(stateSelect, stateNameInput);
+                    setSelectValue(stateSelect, '', stateNameInput, false);
                     return;
                 }
 
-                fetch(`{{ url('admin/locations/governorates') }}/${governorateId}/states`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
-                    .then(response => response.json())
+                fetch(`{{ url('admin/locations/governorates') }}/${governorateId}/states`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         populateSelect(stateSelect, data.items || [], 'state');
-                        $(stateSelect).val(selectedValue).trigger('change');
-                        setSelectedName(stateSelect, stateNameInput);
+                        setSelectValue(stateSelect, selectedValue || '', stateNameInput, !!(selectedValue || ''));
+                    })
+                    .catch(error => {
+                        console.error('Failed to fetch states', error);
                     });
             };
 
-            countrySelect.addEventListener('change', function () {
+            const handleCountryChange = function (value) {
+                console.debug('[properties] country changed', value);
                 setSelectedName(countrySelect, countryNameInput);
-                fetchGovernorates(this.value);
+                fetchGovernorates(value);
+            };
+
+            const handleGovernorateChange = function (value) {
+                console.debug('[properties] governorate changed', value);
+                setSelectedName(governorateSelect, governorateNameInput);
+                fetchStates(value);
+            };
+
+            const handleStateChange = function () {
+                setSelectedName(stateSelect, stateNameInput);
+            };
+
+            countrySelect.addEventListener('change', function () {
+                handleCountryChange(this.value);
+            });
+            $(countrySelect).on('select2:select', function (e) {
+                handleCountryChange(e.params.data.id);
             });
 
             governorateSelect.addEventListener('change', function () {
-                setSelectedName(governorateSelect, governorateNameInput);
-                fetchStates(this.value);
+                handleGovernorateChange(this.value);
+            });
+            $(governorateSelect).on('select2:select', function (e) {
+                handleGovernorateChange(e.params.data.id);
             });
 
-            stateSelect.addEventListener('change', function () {
-                setSelectedName(stateSelect, stateNameInput);
-            });
+            stateSelect.addEventListener('change', handleStateChange);
+            $(stateSelect).on('select2:select', handleStateChange);
 
             const initialCountry = @json(old('country_id', $selectedCountryId));
             const initialGovernorate = @json(old('governorate_id', $selectedGovernorateId));

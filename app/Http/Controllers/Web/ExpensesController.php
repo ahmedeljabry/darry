@@ -22,7 +22,7 @@ class ExpensesController extends Controller
 
     public function create(): View
     {
-        $properties = Property::query()->pluck('name','id');
+        $properties = Property::forCurrentUser()->pluck('name','id');
         $units = Unit::query()->select('id','name','property_id')->get();
         return view('admin.expenses.create', compact('properties','units'));
     }
@@ -35,7 +35,7 @@ class ExpensesController extends Controller
 
     public function edit(Expense $expense): View
     {
-        $properties = Property::query()->pluck('name','id');
+        $properties = Property::forCurrentUser()->pluck('name','id');
         $units = Unit::query()->select('id','name','property_id')->get();
         return view('admin.expenses.edit', compact('expense','properties','units'));
     }
@@ -52,4 +52,3 @@ class ExpensesController extends Controller
         return redirect()->route('admin.expenses.index')->with('status', __('messages.success_deleted'));
     }
 }
-

@@ -22,7 +22,6 @@ class PropertiesDataTable extends DataTable
                 $val = $p->use_type instanceof PropertyUseType ? $p->use_type->value : (string) $p->use_type;
                 return __('properties.use_types.' . $val);
             })
-            // تعديل العنوان ليكون كاملاً
             ->addColumn('address', fn (Property $p) => $p->full_address)
             ->editColumn('coordinates' , fn (Property $p) => $p->coordinates ?: '--')
             ->addColumn('actions', function (Property $p) {
@@ -38,9 +37,16 @@ class PropertiesDataTable extends DataTable
 
     public function query(Property $model): QueryBuilder
     {
-        return $model->newQuery()->withCount('units')->select([
+        $query = $model->newQuery()->withCount('units')->select([
             'id','name','country','governorate','state','city','coordinates','use_type'
         ]);
+
+        $user = auth()->user();
+        if ($user && $user->property_id) {
+            $query->where('id', $user->property_id);
+        }
+
+        return $query;
     }
 
     public function html(): HtmlBuilder

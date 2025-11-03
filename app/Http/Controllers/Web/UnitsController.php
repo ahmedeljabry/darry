@@ -23,7 +23,7 @@ class UnitsController extends Controller
 
     public function create(): View
     {
-        $properties = Property::query()->pluck('name', 'id');
+        $properties = Property::forCurrentUser()->pluck('name', 'id');
         return view('admin.units.create', compact('properties'));
     }
 
@@ -40,7 +40,7 @@ class UnitsController extends Controller
 
     public function edit(Unit $unit): View
     {
-        $properties = Property::query()->pluck('name', 'id');
+        $properties = Property::forCurrentUser()->pluck('name', 'id');
         return view('admin.units.edit', compact('unit','properties'));
     }
 

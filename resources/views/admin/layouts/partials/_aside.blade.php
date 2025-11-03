@@ -1,12 +1,69 @@
-<div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
-    @php
-        use Illuminate\Support\Facades\Route as R;
-        $r = function(string $name, string $fallback){
-            return R::has($name) ? route($name) : url($fallback);
-        };
-    @endphp
+@php
+    use Illuminate\Support\Facades\Route as R;
+    $r = function(string $name, string $fallback){
+        return R::has($name) ? route($name) : url($fallback);
+    };
+    $authUser = auth()->user();
+    $authProperty = $authUser?->property;
+    $roleBadge = $authUser?->roles?->pluck('name')->take(2)->implode(', ');
+    $propertyUnitCount = $authProperty ? $authProperty->units()->count() : null;
+    $propertyFloorCount = $authProperty ? $authProperty->floors()->count() : null;
+@endphp
 
-    <div id="kt_aside_menu" class="aside-menu my-4" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
+<div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
+    <div class="px-6 pt-6">
+        <div class="rounded border border-dashed border-primary bg-light-primary bg-opacity-25 p-5 position-relative overflow-hidden">
+            <div class="d-flex align-items-center">
+                <div class="symbol symbol-45px symbol-light-primary me-4">
+                    <span class="symbol-label">
+                        <i class="la la-user-tie text-primary fs-3"></i>
+                    </span>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-bold text-dark fs-6 mb-1">{{ $authUser?->name }}</div>
+                    <div class="text-muted fs-8">
+                        {{ $roleBadge ?: __('users.scope_system_short') }}
+                    </div>
+                </div>
+            </div>
+            <div class="separator separator-dashed my-4"></div>
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <span class="svg-icon svg-icon-2 text-primary me-2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path opacity="0.3" d="M12 2L3 7V9H21V7L12 2Z" fill="currentColor"/>
+                                <path d="M19 10H5V21H19V10Z" fill="currentColor"/>
+                            </svg>
+                        </span>
+                        <div>
+                            <div class="fw-semibold text-dark">{{ $authProperty?->name ?? __('users.scope_system_short') }}</div>
+                            <div class="text-muted fs-9">{{ $authProperty?->full_address ?? __('users.scope_system') }}</div>
+                        </div>
+                    </div>
+                    @if($authProperty && R::has('admin.properties.show'))
+                        <a href="{{ route('admin.properties.show', $authProperty) }}" class="btn btn-sm btn-light-primary">
+                            {{ __('messages.show') }}
+                        </a>
+                    @endif
+                </div>
+                @if($authProperty)
+                    <div class="d-flex gap-4">
+                        <div class="bg-white bg-opacity-75 rounded px-3 py-2 text-center flex-grow-1">
+                            <div class="fw-bold fs-5 text-primary">{{ number_format((int) $propertyUnitCount) }}</div>
+                            <div class="text-muted fs-9">{{ __('units.title') }}</div>
+                        </div>
+                        <div class="bg-white bg-opacity-75 rounded px-3 py-2 text-center flex-grow-1">
+                            <div class="fw-bold fs-5 text-primary">{{ number_format((int) $propertyFloorCount) }}</div>
+                            <div class="text-muted fs-9">{{ __('floors.title') }}</div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <div id="kt_aside_menu" class="aside-menu my-6" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
         <ul class="menu-nav">
 
             @can('dashboard.view')
@@ -325,5 +382,4 @@
         </ul>
     </div>
 </div>
-
 

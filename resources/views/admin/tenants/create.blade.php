@@ -60,21 +60,39 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        $(function () {
             const tenantTypeSelect = document.querySelector('select[name="tenant_type"]');
             const relativesSection = document.getElementById('tenantRelatives');
             if (!tenantTypeSelect || !relativesSection) {
                 return;
             }
-            const toggleRelatives = function () {
-                const isCommercial = tenantTypeSelect.value === 'COMMERCIAL';
+
+            const relativeInputs = relativesSection.querySelectorAll('input, select, textarea');
+
+            const toggleRelatives = function (type) {
+                const isCommercial = type === 'COMMERCIAL';
                 relativesSection.classList.toggle('d-none', isCommercial);
-                relativesSection.querySelectorAll('input').forEach(function (input) {
-                    input.disabled = isCommercial;
+                relativeInputs.forEach(function (el) {
+                    el.disabled = isCommercial;
                 });
             };
-            tenantTypeSelect.addEventListener('change', toggleRelatives);
-            toggleRelatives();
+
+            const handleChange = function (value) {
+                toggleRelatives(value || '');
+            };
+
+            tenantTypeSelect.addEventListener('change', function () {
+                handleChange(this.value);
+            });
+
+            const $select = $(tenantTypeSelect);
+            if ($select.hasClass('select2-hidden-accessible')) {
+                $select.on('select2:select select2:clear', function (e) {
+                    handleChange(e.params && e.params.data ? e.params.data.id : tenantTypeSelect.value);
+                });
+            }
+
+            handleChange(tenantTypeSelect.value);
         });
     </script>
 @endpush

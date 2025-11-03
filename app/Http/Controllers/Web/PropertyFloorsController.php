@@ -9,11 +9,14 @@ use App\Http\Requests\Floors\UpdateFloorRequest;
 use App\Models\Floor;
 use App\Models\Property;
 use Illuminate\Http\RedirectResponse;
+use App\Support\PropertyAccess;
 
 class PropertyFloorsController extends Controller
 {
     public function store(Property $property, StoreFloorRequest $request): RedirectResponse
     {
+        PropertyAccess::ensureProperty($property);
+
         $property->floors()->create($request->validated());
 
         return redirect()
@@ -23,6 +26,7 @@ class PropertyFloorsController extends Controller
 
     public function update(Property $property, Floor $floor, UpdateFloorRequest $request): RedirectResponse
     {
+        PropertyAccess::ensureProperty($property);
         abort_unless($floor->property_id === $property->id, 404);
 
         $floor->update($request->validated());
@@ -34,6 +38,7 @@ class PropertyFloorsController extends Controller
 
     public function destroy(Property $property, Floor $floor): RedirectResponse
     {
+        PropertyAccess::ensureProperty($property);
         abort_unless($floor->property_id === $property->id, 404);
 
         $floor->delete();
@@ -43,4 +48,3 @@ class PropertyFloorsController extends Controller
             ->with('status', __('messages.success_deleted'));
     }
 }
-

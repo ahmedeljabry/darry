@@ -5,10 +5,12 @@ namespace App\Models;
 
 use App\Domain\Enums\PropertyUseType;
 use App\Models\Floor;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class Property extends Model
 {
@@ -32,6 +34,16 @@ class Property extends Model
     public function facilities(): BelongsToMany
     {
         return $this->belongsToMany(Facility::class, 'facility_property');
+    }
+
+    public function scopeForCurrentUser(Builder $query): Builder
+    {
+        $user = Auth::user();
+        if ($user && $user->property_id) {
+            $query->where('id', $user->property_id);
+        }
+
+        return $query;
     }
 
     public function units(): HasMany

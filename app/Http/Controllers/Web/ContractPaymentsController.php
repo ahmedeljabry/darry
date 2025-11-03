@@ -23,7 +23,7 @@ class ContractPaymentsController extends Controller
 
     public function create(): View
     {
-        $properties = Property::query()->pluck('name','id');
+        $properties = Property::forCurrentUser()->pluck('name','id');
         $tenants = Tenant::query()->pluck('full_name','id');
         $units = Unit::query()->select('id','name','property_id','rent_amount')->get();
         return view('admin.contract_payments.create', compact('properties','tenants','units'));
@@ -37,7 +37,7 @@ class ContractPaymentsController extends Controller
 
     public function edit(ContractPayment $contractPayment): View
     {
-        $properties = Property::query()->pluck('name','id');
+        $properties = Property::forCurrentUser()->pluck('name','id');
         $tenants = Tenant::query()->pluck('full_name','id');
         $units = Unit::query()->select('id','name','property_id','rent_amount')->get();
         return view('admin.contract_payments.edit', compact('contractPayment','properties','tenants','units'));

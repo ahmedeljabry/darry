@@ -1,24 +1,29 @@
 <?php
+declare(strict_types=1);
+
 return [
     'title' => 'الوحدات',
-    'list' => 'قائمة الوحدات',
-    'create' => 'إضافة وحدة',
     'name' => 'الاسم',
     'unit_type' => 'نوع الوحدة',
+    'parent_unit' => 'الوحدة الرئيسية',
     'capacity' => 'السعة',
     'rent_type' => 'نوع الإيجار',
     'rent_amount' => 'قيمة الإيجار',
     'status' => 'الحالة',
     'actions' => 'إجراءات',
+    'create' => 'إنشاء وحدة',
+    'edit' => 'تعديل وحدة',
+    'show' => 'عرض وحدة',
+    'children' => 'الوحدات التابعة',
+    'active' => 'نشطة',
+    'inactive' => 'غير نشطة',
+    'list' => 'قائمة الوحدات',
+
     'types' => [
         'APARTMENT' => 'شقة',
         'ROOM' => 'غرفة',
         'BED' => 'سرير',
     ],
-    'quick_add' => 'إضافة وحدة سريعة',
-    'property' => 'المبنى',
-    'parent_unit' => 'الوحدة الأم',
-    'empty' => 'لم يتم إضافة وحدات بعد.',
     'rent_types' => [
         'DAILY' => 'يومي',
         'MONTHLY' => 'شهري',
@@ -28,5 +33,5 @@ return [
         'ACTIVE' => 'نشطة',
         'INACTIVE' => 'غير نشطة',
     ],
+    'property' => 'العقار',
 ];
-

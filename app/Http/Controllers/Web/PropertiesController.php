@@ -15,6 +15,7 @@ use App\Http\Requests\Properties\StorePropertyRequest;
 use App\Http\Requests\Properties\UpdatePropertyRequest;
 use Illuminate\View\View;
 use App\DataTables\PropertiesDataTable;
+use App\Support\PropertyAccess;
 use Illuminate\Support\Facades\Storage;
 use App\Domain\Enums\UnitType;
 use App\Domain\Enums\RentType;
@@ -29,6 +30,10 @@ class PropertiesController extends Controller
 
     public function create(): View
     {
+        if (PropertyAccess::currentId()) {
+            abort(403);
+        }
+
         $facilities = Facility::query()->pluck('name','id');
         $countries = Country::query()->orderBy('name')->pluck('name','id')->toArray();
 
@@ -37,6 +42,8 @@ class PropertiesController extends Controller
 
     public function show(Property $property): View
     {
+        PropertyAccess::ensureProperty($property);
+
         $property->load([
             'facilities:id,name',
             'floors',
@@ -62,6 +69,10 @@ class PropertiesController extends Controller
 
     public function store(StorePropertyRequest $request): RedirectResponse
     {
+        if (PropertyAccess::currentId()) {
+            abort(403);
+        }
+
         $data = $request->validated();
 
         if ($request->hasFile('thumbnail')) {
@@ -85,6 +96,8 @@ class PropertiesController extends Controller
 
     public function edit(Property $property): View
     {
+        PropertyAccess::ensureProperty($property);
+
         $facilities = Facility::query()->pluck('name','id');
         $countries = Country::query()->orderBy('name')->pluck('name','id')->toArray();
 
@@ -122,6 +135,8 @@ class PropertiesController extends Controller
 
     public function update(UpdatePropertyRequest $request, Property $property): RedirectResponse
     {
+        PropertyAccess::ensureProperty($property);
+
         $data = $request->validated();
 
         // Start with existing images array
@@ -168,6 +183,8 @@ class PropertiesController extends Controller
 
     public function destroy(Property $property): RedirectResponse
     {
+        PropertyAccess::ensureProperty($property);
+
         if ($property->thumbnail) {
             Storage::disk('public')->delete($property->thumbnail);
         }

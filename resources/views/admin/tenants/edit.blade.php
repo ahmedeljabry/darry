@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', __('tenants.edit'))
+@section('title', __('tenants.edit_tenants'))
 @section('breadcrumbs')
     <!--begin::Page Title-->
     <h5 class="text-dark font-weight-bold mt-2 mb-2 mr-5">{{ __('tenants.title') }}</h5>
@@ -8,35 +8,15 @@
     <!--begin::Breadcrumb-->
     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
         <li class="breadcrumb-item text-muted">
-            <a href="" class="text-muted">{{ __('tenants.edit') }}</a>
+            <a href="" class="text-muted">{{ __('tenants.edit_tenants') }}</a>
         </li>
     </ul>
     <!--end::Breadcrumb-->
 @endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const tenantTypeSelect = document.querySelector('select[name="tenant_type"]');
-            const relativesSection = document.getElementById('tenantRelatives');
-            if (!tenantTypeSelect || !relativesSection) {
-                return;
-            }
-            const toggleRelatives = function () {
-                const isCommercial = tenantTypeSelect.value === 'COMMERCIAL';
-                relativesSection.classList.toggle('d-none', isCommercial);
-                relativesSection.querySelectorAll('input').forEach(function (input) {
-                    input.disabled = isCommercial;
-                });
-            };
-            tenantTypeSelect.addEventListener('change', toggleRelatives);
-            toggleRelatives();
-        });
-    </script>
-@endpush
 
 @section('content')
-    <x-admin.form-card :title="__('tenants.edit')" :action="route('admin.tenants.update', $tenant)" method="PUT" :back="route('admin.tenants.index')">
+    <x-admin.form-card :title="__('tenants.edit_tenants')" :action="route('admin.tenants.update', $tenant)" method="PUT" :back="route('admin.tenants.index')">
         <x-admin.select-solid name="tenant_type" :label="__('tenants.tenant_type')" :options="['PERSONAL' => __('tenants.tenant_types.PERSONAL'),'COMMERCIAL' => __('tenants.tenant_types.COMMERCIAL')]" :value="old('tenant_type', $tenant->tenant_type)" required />
 
         <x-admin.input-solid name="full_name" :label="__('tenants.full_name')" :value="$tenant->full_name" placeholder="{{ __('tenants.full_name') }}" required />
@@ -79,3 +59,42 @@
         </div>
     </x-admin.form-card>
 @endsection
+
+@push('scripts')
+    <script>
+        $(function () {
+            const tenantTypeSelect = document.querySelector('select[name="tenant_type"]');
+            const relativesSection = document.getElementById('tenantRelatives');
+            if (!tenantTypeSelect || !relativesSection) {
+                return;
+            }
+
+            const relativeInputs = relativesSection.querySelectorAll('input, select, textarea');
+
+            const toggleRelatives = function (type) {
+                const isCommercial = type === 'COMMERCIAL';
+                relativesSection.classList.toggle('d-none', isCommercial);
+                relativeInputs.forEach(function (el) {
+                    el.disabled = isCommercial;
+                });
+            };
+
+            const handleChange = function (value) {
+                toggleRelatives(value || '');
+            };
+
+            tenantTypeSelect.addEventListener('change', function () {
+                handleChange(this.value);
+            });
+
+            const $select = $(tenantTypeSelect);
+            if ($select.hasClass('select2-hidden-accessible')) {
+                $select.on('select2:select select2:clear', function (e) {
+                    handleChange(e.params && e.params.data ? e.params.data.id : tenantTypeSelect.value);
+                });
+            }
+
+            handleChange(tenantTypeSelect.value);
+        });
+    </script>
+@endpush

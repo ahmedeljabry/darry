@@ -15,10 +15,10 @@ class UpdateFloorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name_ar' => ['required','string','max:255'],
+            'name_ar' => ['nullable','string','max:255'],
+            'description_ar' => ['nullable','string','max:255'],
             'description_en' => ['nullable','string','max:255'],
-            'sort_order' => ['nullable','integer','min:0','max:9999'],
+            'sort_order' => ['required','integer','min:0','max:9999'],
         ];
     }
 }
-

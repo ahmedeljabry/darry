@@ -21,7 +21,7 @@
                 <h3 class="card-label">{{ $tenant->full_name }}</h3>
             </div>
             <div class="card-toolbar">
-                <a href="{{ route('admin.tenants.edit', $tenant) }}" class="btn btn-sm btn-primary">{{ __('messages.edit') }}</a>
+                <a href="{{ route('admin.tenants.edit_tenants', $tenant) }}" class="btn btn-sm btn-primary">{{ __('messages.edit') }}</a>
                 <a href="{{ route('admin.tenants.index') }}" class="btn btn-sm btn-light">{{ __('messages.back') }}</a>
             </div>
         </div>

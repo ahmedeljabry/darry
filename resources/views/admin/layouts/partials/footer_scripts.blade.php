@@ -69,7 +69,6 @@
 @stack('scripts')
 
 <script>
-    // Global SweetAlert2 delete binder (works for DataTables and static content)
     (function(){
         function bindSwalDelete(){
             if (!window.Swal) return;

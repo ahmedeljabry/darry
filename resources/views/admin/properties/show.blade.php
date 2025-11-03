@@ -111,6 +111,7 @@
                                 <thead>
                                     <tr>
                                         <th>{{ __('floors.name_ar') }}</th>
+                                        <th>{{ __('floors.description_ar') }}</th>
                                         <th>{{ __('floors.description_en') }}</th>
                                         <th class="text-end">{{ __('messages.actions') }}</th>
                                     </tr>
@@ -119,6 +120,7 @@
                                     @foreach($property->floors as $floor)
                                         <tr>
                                             <td class="fw-semibold">{{ $floor->name_ar }}</td>
+                                            <td class="text-muted">{{ $floor->description_ar ?: '--' }}</td>
                                             <td class="text-muted">{{ $floor->description_en ?: '--' }}</td>
                                             <td class="text-end">
                                                 <div class="d-flex justify-content-end gap-2">
@@ -145,9 +147,10 @@
                                                         @csrf
                                                         @method('PUT')
                                                         <div class="modal-body">
-                                                            <x-admin.input-solid name="name_ar" :value="$floor->name_ar" :label="__('floors.name_ar')" required />
+                                                            <x-admin.input-solid name="name_ar" :value="$floor->name_ar" :label="__('floors.name_ar')" />
+                                                            <x-admin.input-solid name="description_ar" :value="$floor->description_ar" :label="__('floors.description_ar')" />
                                                             <x-admin.input-solid name="description_en" :value="$floor->description_en" :label="__('floors.description_en')" />
-                                                            <x-admin.input-solid name="sort_order" type="number" :value="$floor->sort_order" :label="__('floors.sort_order')" min="0" />
+                                                            <x-admin.input-solid name="sort_order" type="number" :value="$floor->sort_order" :label="__('floors.sort_order')" min="0" required />
                                                         </div>
                                                         <div class="modal-footer">
                                                             <button type="button" class="btn btn-light" data-dismiss="modal">{{ __('messages.cancel') }}</button>
@@ -266,9 +269,10 @@
                 <form action="{{ route('admin.properties.floors.store', $property) }}" method="POST" class="form">
                     @csrf
                     <div class="card-body border-top p-6">
-                        <x-admin.input-solid name="name_ar" :label="__('floors.name_ar')" required />
+                        <x-admin.input-solid name="name_ar" :label="__('floors.name_ar')" />
+                        <x-admin.input-solid name="description_ar" :label="__('floors.description_ar')" />
                         <x-admin.input-solid name="description_en" :label="__('floors.description_en')" />
-                        <x-admin.input-solid name="sort_order" type="number" :label="__('floors.sort_order')" min="0" />
+                        <x-admin.input-solid name="sort_order" type="number" :label="__('floors.sort_order')" min="0" required />
                     </div>
                     <div class="card-footer border-0 pt-0 pb-6 px-6">
                         <button type="submit" class="btn btn-primary w-100">{{ __('messages.save') }}</button>

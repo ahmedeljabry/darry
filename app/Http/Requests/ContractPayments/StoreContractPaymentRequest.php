@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\ContractPayments;
 
+use App\Support\PropertyAccess;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreContractPaymentRequest extends FormRequest
 {
@@ -12,12 +14,26 @@ class StoreContractPaymentRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($propertyId = PropertyAccess::currentId()) {
+            $this->merge(['property_id' => $propertyId]);
+        }
+    }
+
     public function rules(): array
     {
+        $propertyRule = ['required','integer','exists:properties,id'];
+        $unitRule = ['required','integer','exists:units,id'];
+        if ($propertyId = PropertyAccess::currentId()) {
+            $propertyRule[] = Rule::in([$propertyId]);
+            $unitRule = ['required','integer', Rule::exists('units', 'id')->where('property_id', $propertyId)];
+        }
+
         return [
-            'property_id' => ['required','uuid','exists:properties,id'],
-            'unit_id' => ['required','uuid','exists:units,id'],
-            'tenant_id' => ['required','uuid','exists:tenants,id'],
+            'property_id' => $propertyRule,
+            'unit_id' => $unitRule,
+            'tenant_id' => ['required','integer','exists:tenants,id'],
             'period_month' => ['required','integer','between:1,12'],
             'period_year' => ['required','integer','between:2000,2100'],
             'amount_due' => ['required','numeric','min:0'],
@@ -29,4 +45,3 @@ class StoreContractPaymentRequest extends FormRequest
         ];
     }
 }
-

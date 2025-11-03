@@ -68,6 +68,9 @@
                 const startVal = startInput.value;
                 const durationVal = parseInt(durationInput.value, 10);
                 if (!startVal || Number.isNaN(durationVal) || durationVal < 1) {
+                    if (endInput.value) {
+                        endInput.value = '';
+                    }
                     return;
                 }
                 const startDate = new Date(startVal + 'T00:00:00');
@@ -91,8 +94,9 @@
 
             [startInput, durationInput].forEach(function (input) {
                 if (input) {
-                    input.addEventListener('change', updateEndDate);
-                    input.addEventListener('keyup', updateEndDate);
+                    ['change', 'keyup', 'input'].forEach(function(evt){
+                        input.addEventListener(evt, updateEndDate);
+                    });
                 }
             });
 

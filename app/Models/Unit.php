@@ -8,6 +8,7 @@ use App\Domain\Enums\UnitStatus;
 use App\Domain\Enums\UnitType;
 use App\Domain\Enums\UnitCategory;
 use App\Domain\Enums\UnitOccupancyStatus;
+use App\Models\Concerns\BelongsToProperty;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Unit extends Model
 {
     use HasFactory;
+    use BelongsToProperty;
 
     protected $fillable = [
         'parent_id','property_id','name','unit_type','capacity','rooms','toilets','category','rent_type','rent_amount','electricity_acc','water_acc','status','occupancy_status',
@@ -44,4 +46,3 @@ class Unit extends Model
         return $this->belongsTo(Property::class);
     }
 }
-

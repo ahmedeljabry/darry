@@ -25,7 +25,7 @@ class UsersController extends Controller
     public function create(): View
     {
         $roles = \Spatie\Permission\Models\Role::query()->pluck('name','name');
-        $propertiesCollection = Property::query()->pluck('name', 'id');
+        $propertiesCollection = Property::forCurrentUser()->pluck('name', 'id');
         $currentPropertyId = Auth::user()?->property_id;
         $canManageSystem = $currentPropertyId === null;
         $properties = $canManageSystem
@@ -67,7 +67,7 @@ class UsersController extends Controller
     {
         $this->guardPropertyAccess($user);
         $roles = \Spatie\Permission\Models\Role::query()->pluck('name','name');
-        $propertiesCollection = Property::query()->pluck('name', 'id');
+        $propertiesCollection = Property::forCurrentUser()->pluck('name', 'id');
         $currentPropertyId = Auth::user()?->property_id;
         $canManageSystem = $currentPropertyId === null;
         $properties = $canManageSystem
