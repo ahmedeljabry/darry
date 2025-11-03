@@ -11,60 +11,55 @@
 @endphp
 
 <div class="aside-menu-wrapper flex-column-fluid" id="kt_aside_menu_wrapper">
-    <div class="px-6 pt-6">
-        <div class="rounded border border-dashed border-primary bg-light-primary bg-opacity-25 p-5 position-relative overflow-hidden">
-            <div class="d-flex align-items-center">
-                <div class="symbol symbol-45px symbol-light-primary me-4">
-                    <span class="symbol-label">
-                        <i class="la la-user-tie text-primary fs-3"></i>
-                    </span>
-                </div>
-                <div class="flex-grow-1">
-                    <div class="fw-bold text-dark fs-6 mb-1">{{ $authUser?->name }}</div>
-                    <div class="text-muted fs-8">
-                        {{ $roleBadge ?: __('users.scope_system_short') }}
-                    </div>
-                </div>
-            </div>
-            <div class="separator separator-dashed my-4"></div>
-            <div class="d-flex flex-column gap-3">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <span class="svg-icon svg-icon-2 text-primary me-2">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path opacity="0.3" d="M12 2L3 7V9H21V7L12 2Z" fill="currentColor"/>
-                                <path d="M19 10H5V21H19V10Z" fill="currentColor"/>
-                            </svg>
-                        </span>
-                        <div>
-                            <div class="fw-semibold text-dark">{{ $authProperty?->name ?? __('users.scope_system_short') }}</div>
-                            <div class="text-muted fs-9">{{ $authProperty?->full_address ?? __('users.scope_system') }}</div>
-                        </div>
-                    </div>
-                    @if($authProperty && R::has('admin.properties.show'))
-                        <a href="{{ route('admin.properties.show', $authProperty) }}" class="btn btn-sm btn-light-primary">
-                            {{ __('messages.show') }}
-                        </a>
-                    @endif
-                </div>
-                @if($authProperty)
-                    <div class="d-flex gap-4">
-                        <div class="bg-white bg-opacity-75 rounded px-3 py-2 text-center flex-grow-1">
-                            <div class="fw-bold fs-5 text-primary">{{ number_format((int) $propertyUnitCount) }}</div>
-                            <div class="text-muted fs-9">{{ __('units.title') }}</div>
-                        </div>
-                        <div class="bg-white bg-opacity-75 rounded px-3 py-2 text-center flex-grow-1">
-                            <div class="fw-bold fs-5 text-primary">{{ number_format((int) $propertyFloorCount) }}</div>
-                            <div class="text-muted fs-9">{{ __('floors.title') }}</div>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
     <div id="kt_aside_menu" class="aside-menu my-6" data-menu-vertical="1" data-menu-scroll="1" data-menu-dropdown-timeout="500">
         <ul class="menu-nav">
+            <li class="menu-item">
+                <div class="menu-content px-6 pt-6 pb-5">
+                    <div class="rounded border border-dashed border-primary bg-light-primary bg-opacity-30 p-5 mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="symbol symbol-45px symbol-light-primary me-3">
+                                <span class="symbol-label">
+                                    <i class="la la-user-tie text-primary fs-3"></i>
+                                </span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark">{{ $authUser?->name }}</div>
+                                <div class="text-muted fs-8">{{ $roleBadge ?: __('users.scope_system_short') }}</div>
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-4"></div>
+                        <div class="d-flex align-items-start">
+                            <span class="svg-icon svg-icon-2 text-primary me-3">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path opacity="0.3" d="M12 2L3 7V9H21V7L12 2Z" fill="currentColor"/>
+                                    <path d="M19 10H5V21H19V10Z" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold text-dark">{{ $authProperty?->name ?? __('users.scope_system_short') }}</div>
+                                <div class="text-muted fs-9">{{ $authProperty?->full_address ?? __('users.scope_system') }}</div>
+                            </div>
+                            @if($authProperty && R::has('admin.properties.show'))
+                                <a href="{{ route('admin.properties.show', $authProperty) }}" class="btn btn-icon btn-sm btn-light-primary border-0" title="{{ __('messages.show') }}">
+                                    <i class="la la-arrow-left"></i>
+                                </a>
+                            @endif
+                        </div>
+                        @if($authProperty)
+                            <div class="d-flex gap-3 mt-4">
+                                <div class="bg-white rounded px-3 py-2 text-center flex-grow-1 shadow-sm">
+                                    <div class="fw-bold fs-5 text-primary mb-1">{{ number_format((int) $propertyUnitCount) }}</div>
+                                    <div class="text-muted fs-9">{{ __('units.title') }}</div>
+                                </div>
+                                <div class="bg-white rounded px-3 py-2 text-center flex-grow-1 shadow-sm">
+                                    <div class="fw-bold fs-5 text-primary mb-1">{{ number_format((int) $propertyFloorCount) }}</div>
+                                    <div class="text-muted fs-9">{{ __('floors.title') }}</div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </li>
 
             @can('dashboard.view')
             <li class="menu-item {{ request()->routeIs('admin.dashboard') ? 'menu-item-active' : '' }}" aria-haspopup="true">
@@ -382,4 +377,3 @@
         </ul>
     </div>
 </div>
-
