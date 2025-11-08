@@ -16,6 +16,7 @@
         $user = auth()->user();
         $currency = $currency ?? 'SAR';
         $financeTotals = $financeTotals ?? ['income' => 0, 'expenses' => 0, 'net' => 0];
+        $propertySnapshot = $propertySnapshot ?? null;
         $kpiCards = [
             [
                 'title' => 'إجمالي الوحدات',
@@ -85,6 +86,160 @@
             </div>
         </div>
     </div>
+
+    @if ($propertySnapshot)
+        <div class="card card-custom mb-8 border border-primary">
+            <div class="card-body d-flex flex-column flex-lg-row align-items-lg-center justify-content-between">
+                <div class="mb-6 mb-lg-0">
+                    <span class="badge badge-light-primary font-weight-bold px-4 py-2 mb-3">
+                        {{ __('messages.property_snapshot.title') }}
+                    </span>
+                    <h3 class="text-dark font-weight-bolder mb-2">{{ $propertySnapshot['name'] }}</h3>
+                    <p class="text-muted mb-0">{{ __('messages.property_snapshot.subtitle') }}</p>
+                    <div class="text-muted font-size-sm d-flex align-items-center mt-4">
+                        <i class="la la-map-marker-alt text-primary font-size-h4 ml-2"></i>
+                        <span>{{ $propertySnapshot['address'] ?: __('messages.not_available') }}</span>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap text-left text-lg-right">
+                    <div class="px-lg-5 mb-4 mb-lg-0">
+                        <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.use_type') }}</span>
+                        <div class="text-dark font-weight-bolder font-size-h4">
+                            @if ($propertySnapshot['use_type'])
+                                {{ __('properties.use_types.' . $propertySnapshot['use_type']) }}
+                            @else
+                                {{ __('messages.not_available') }}
+                            @endif
+                        </div>
+                    </div>
+                    <div class="px-lg-5 mb-4 mb-lg-0">
+                        <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.area') }}</span>
+                        <div class="text-dark font-weight-bolder font-size-h4">
+                            {{ $propertySnapshot['area'] ? number_format($propertySnapshot['area']) : '—' }}
+                        </div>
+                    </div>
+                    <div class="px-lg-5 mb-4 mb-lg-0">
+                        <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.floors') }}</span>
+                        <div class="text-dark font-weight-bolder font-size-h4">
+                            {{ number_format($propertySnapshot['floors']) }}
+                        </div>
+                    </div>
+                    <div class="px-lg-5">
+                        <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.units_total') }}</span>
+                        <div class="text-dark font-weight-bolder font-size-h4">
+                            {{ number_format($propertySnapshot['units']['total']) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-12">
+            <div class="col-xl-4 mb-8">
+                <div class="card card-custom shadow-sm h-100">
+                    <div class="card-body">
+                        <h4 class="text-dark font-weight-bolder mb-4">{{ __('messages.property_snapshot.units_overview') }}</h4>
+                        <div class="d-flex align-items-center justify-content-between mb-5">
+                            <span class="text-muted">{{ __('messages.property_snapshot.occupied') }}</span>
+                            <span class="badge badge-light-success font-weight-bold px-4 py-2">
+                                {{ $propertySnapshot['units']['occupancy_rate'] }}%
+                            </span>
+                        </div>
+                        <div class="progress progress-md">
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: {{ $propertySnapshot['units']['occupancy_rate'] }}%;"
+                                 aria-valuenow="{{ $propertySnapshot['units']['occupancy_rate'] }}" aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-6">
+                            <div>
+                                <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.occupied') }}</span>
+                                <div class="text-dark font-weight-bolder font-size-h4">
+                                    {{ number_format($propertySnapshot['units']['occupied']) }}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.vacant') }}</span>
+                                <div class="text-dark font-weight-bolder font-size-h4">
+                                    {{ number_format($propertySnapshot['units']['vacant']) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="separator separator-dashed my-5"></div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.maintenance') }}</span>
+                            <span class="text-dark font-weight-bolder">
+                                {{ number_format($propertySnapshot['units']['maintenance']) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 mb-8">
+                <div class="card card-custom shadow-sm h-100">
+                    <div class="card-body">
+                        <h4 class="text-dark font-weight-bolder mb-4">{{ __('messages.property_snapshot.financial') }}</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-muted">{{ __('messages.property_snapshot.income') }}</span>
+                            <span class="text-dark font-weight-bolder">
+                                {{ number_format($propertySnapshot['financial']['income'], 2) }} {{ $currency }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-muted">{{ __('messages.property_snapshot.expenses') }}</span>
+                            <span class="text-dark font-weight-bolder">
+                                {{ number_format($propertySnapshot['financial']['expenses'], 2) }} {{ $currency }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-5">
+                            <span class="text-muted">{{ __('messages.property_snapshot.net') }}</span>
+                            <span class="text-{{ $propertySnapshot['financial']['net'] >= 0 ? 'success' : 'danger' }} font-weight-bolder">
+                                {{ number_format($propertySnapshot['financial']['net'], 2) }} {{ $currency }}
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="la la-calendar text-muted font-size-lg ml-2"></i>
+                            <span class="text-muted font-size-sm">
+                                {{ __('messages.property_snapshot.date_range') }}:
+                                {{ $propertySnapshot['financial']['from'] }} - {{ $propertySnapshot['financial']['to'] }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 mb-8">
+                <div class="card card-custom shadow-sm h-100">
+                    <div class="card-body">
+                        <h4 class="text-dark font-weight-bolder mb-4">{{ __('messages.property_snapshot.contracts') }}</h4>
+                        <div class="d-flex align-items-center justify-content-between mb-5">
+                            <div>
+                                <span class="text-muted font-size-sm">{{ __('messages.property_snapshot.active_contracts') }}</span>
+                                <div class="text-dark font-weight-bolder font-size-h3">
+                                    {{ number_format($propertySnapshot['contracts']['active']) }}
+                                </div>
+                            </div>
+                            <a href="{{ route('admin.contracts.index') }}"
+                               class="btn btn-sm btn-light-primary font-weight-bold">
+                                {{ __('menu.contracts') }}
+                            </a>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <span class="text-muted">{{ __('messages.property_snapshot.avg_rent') }}</span>
+                            <span class="text-dark font-weight-bolder">
+                                {{ number_format($propertySnapshot['contracts']['avg_rent'], 2) }} {{ $currency }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">{{ __('messages.property_snapshot.expiring') }}</span>
+                            <span class="badge badge-light-warning font-weight-bold px-4 py-2">
+                                {{ number_format($propertySnapshot['contracts']['expiring']) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- KPI Cards -->
     <div class="row g-6 g-xl-9">
@@ -405,4 +560,3 @@
         })();
     </script>
 @endpush
-

@@ -8,6 +8,7 @@ use App\Models\ContractPayment;
 use App\Models\Expense;
 use App\Models\Contract;
 use App\Models\Unit;
+use App\Models\Property;
 use Carbon\Carbon;
 use App\Domain\Enums\UnitOccupancyStatus;
 use App\Models\Setting;
@@ -16,6 +17,7 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
+        $user = auth()->user();
         $unitsCount = Unit::count();
         $vacantUnitsCount = Unit::query()->where('occupancy_status', UnitOccupancyStatus::VACANT)->count();
         $occupiedUnitsCount = Unit::query()->where('occupancy_status', UnitOccupancyStatus::OCCUPIED)->count();
@@ -82,6 +84,84 @@ class DashboardController extends Controller
         $vacancyRate = $unitsCount > 0 ? round(($vacantUnitsCount / $unitsCount) * 100) : 0;
         $maintenanceRate = $unitsCount > 0 ? round(($maintenanceUnitsCount / $unitsCount) * 100) : 0;
 
+        $propertySnapshot = null;
+        if ($user && $user->property_id) {
+            $property = Property::query()
+                ->forCurrentUser()
+                ->withCount('floors')
+                ->find($user->property_id);
+
+            if ($property) {
+                $propertyUnitsQuery = Unit::query()->where('property_id', $property->id);
+                $propertyUnitsTotal = (clone $propertyUnitsQuery)->count();
+                $propertyUnitsOccupied = (clone $propertyUnitsQuery)->where('occupancy_status', UnitOccupancyStatus::OCCUPIED)->count();
+                $propertyUnitsVacant = (clone $propertyUnitsQuery)->where('occupancy_status', UnitOccupancyStatus::VACANT)->count();
+                $propertyUnitsMaintenance = (clone $propertyUnitsQuery)->where('occupancy_status', UnitOccupancyStatus::MAINTENANCE)->count();
+
+                $windowEnd = Carbon::now();
+                $windowStart = $windowEnd->copy()->subDays(30);
+
+                $propertyIncomeLast30 = (float) ContractPayment::query()
+                    ->where('property_id', $property->id)
+                    ->whereNotNull('paid_at')
+                    ->whereBetween('paid_at', [$windowStart->copy(), $windowEnd->copy()])
+                    ->sum('amount_paid');
+
+                $propertyExpenseLast30 = (float) Expense::query()
+                    ->where('property_id', $property->id)
+                    ->whereBetween('date', [$windowStart->copy()->startOfDay(), $windowEnd->copy()->endOfDay()])
+                    ->sum('amount');
+
+                $propertyNetLast30 = $propertyIncomeLast30 - $propertyExpenseLast30;
+
+                $propertyActiveContracts = Contract::query()
+                    ->where('property_id', $property->id)
+                    ->where(function ($query) use ($today) {
+                        $query->whereNull('end_date')
+                            ->orWhere('end_date', '>=', $today);
+                    })
+                    ->count();
+
+                $propertyExpiringSoon = Contract::query()
+                    ->where('property_id', $property->id)
+                    ->whereNotNull('end_date')
+                    ->whereBetween('end_date', [$today, $nearDate])
+                    ->count();
+
+                $propertyAvgRent = (float) Contract::query()
+                    ->where('property_id', $property->id)
+                    ->avg('rent_amount');
+
+                $propertySnapshot = [
+                    'name' => $property->name,
+                    'address' => $property->full_address,
+                    'area' => $property->area_sqm,
+                    'use_type' => $property->use_type?->value,
+                    'floors' => (int) $property->floors_count,
+                    'units' => [
+                        'total' => $propertyUnitsTotal,
+                        'occupied' => $propertyUnitsOccupied,
+                        'vacant' => $propertyUnitsVacant,
+                        'maintenance' => $propertyUnitsMaintenance,
+                        'occupancy_rate' => $propertyUnitsTotal > 0 ? round(($propertyUnitsOccupied / max($propertyUnitsTotal, 1)) * 100) : 0,
+                        'vacancy_rate' => $propertyUnitsTotal > 0 ? round(($propertyUnitsVacant / max($propertyUnitsTotal, 1)) * 100) : 0,
+                    ],
+                    'financial' => [
+                        'income' => $propertyIncomeLast30,
+                        'expenses' => $propertyExpenseLast30,
+                        'net' => $propertyNetLast30,
+                        'from' => $windowStart->toDateString(),
+                        'to' => $windowEnd->toDateString(),
+                    ],
+                    'contracts' => [
+                        'active' => $propertyActiveContracts,
+                        'avg_rent' => round($propertyAvgRent, 2),
+                        'expiring' => $propertyExpiringSoon,
+                    ],
+                ];
+            }
+        }
+
         return view('admin.dashboard', [
             'kpiUnits' => $unitsCount,
             'kpiOccupiedUnits' => $occupiedUnitsCount,
@@ -106,6 +186,7 @@ class DashboardController extends Controller
             'occupancyRate' => $occupancyRate,
             'vacancyRate' => $vacancyRate,
             'maintenanceRate' => $maintenanceRate,
+            'propertySnapshot' => $propertySnapshot,
         ]);
     }
 }

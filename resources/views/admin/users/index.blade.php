@@ -15,8 +15,9 @@
             <div class="card-title">
                 <h3 class="card-label">{{ __('menu.users') }}</h3>
             </div>
-            <div class="card-toolbar"><a href="{{ route('admin.users.create') }}"
-                    class="btn btn-primary">{{ __('menu.users_create') }}</a></div>
+            <div class="card-toolbar">
+                <a href="{{ route('admin.users.create') }}" class="btn btn-primary">{{ __('menu.users_create') }}</a>
+            </div>
         </div>
         <div class="card-body">
             {{ $dataTable->table() }}
