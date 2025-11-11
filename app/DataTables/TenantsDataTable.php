@@ -18,8 +18,10 @@ class TenantsDataTable extends DataTable
         return (new EloquentDataTable($query))
             ->addIndexColumn()
             ->editColumn('full_name', fn (Tenant $t) => e($t->full_name))
+            ->editColumn('national_id_or_cr', fn (Tenant $t) => e($t->national_id_or_cr))
             ->editColumn('email', fn (Tenant $t) => e($t->email))
             ->editColumn('phone', fn (Tenant $t) => e($t->phone))
+            ->editColumn('property_name', fn (Tenant $t) => e($t->property_name ?? $t->property?->name ?? '—'))
             ->editColumn('actions', function (Tenant $t) {
                 return view('admin.layouts.partials._actions', [
                     'showRoute' => route('admin.tenants.show', $t->id),
@@ -33,7 +35,18 @@ class TenantsDataTable extends DataTable
 
     public function query(Tenant $model): QueryBuilder
     {
-        return $model->newQuery()->select(['id', 'full_name', 'email', 'phone']);
+        return $model->newQuery()
+            ->with('property')
+            ->select([
+                'tenants.id',
+                'tenants.full_name',
+                'tenants.national_id_or_cr',
+                'tenants.email',
+                'tenants.phone',
+                'tenants.property_id',
+                'properties.name as property_name',
+            ])
+            ->leftJoin('properties', 'properties.id', '=', 'tenants.property_id');
     }
 
     public function html(): HtmlBuilder
@@ -61,8 +74,10 @@ class TenantsDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('#')->searchable(false)->orderable(false),
             Column::make('full_name')->title(__('tenants.full_name')),
+            Column::make('national_id_or_cr')->title(__('tenants.national_id_or_cr')),
             Column::make('email')->title(__('tenants.email')),
             Column::make('phone')->title(__('tenants.phone')),
+            Column::make('property_name')->title(__('tenants.property')),
             Column::computed('actions')->title(__('messages.actions'))->exportable(false)->printable(false)->width(120)->addClass('text-center'),
         ];
     }

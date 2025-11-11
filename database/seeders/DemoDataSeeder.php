@@ -40,9 +40,10 @@ class DemoDataSeeder extends Seeder
         // Create tenants
         $tenants = collect();
         for ($i = 1; $i <= 18; $i++) {
-            $tenants->push(Tenant::firstOrCreate(
+            $tenants->push(Tenant::updateOrCreate(
                 ['email' => "tenant{$i}@example.com"],
                 [
+                    'property_id' => $property->id,
                     'full_name' => "مستأجر {$i}",
                     'phone' => '05' . rand(10000000, 99999999),
                 ]
@@ -136,4 +137,3 @@ class DemoDataSeeder extends Seeder
         }
     }
 }
-

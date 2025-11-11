@@ -23,16 +23,23 @@ class UpdateContractRequest extends FormRequest
         $id = $this->route('contract')?->id ?? 'NULL';
         $propertyRule = ['sometimes','required','integer','exists:properties,id'];
         $unitRule = ['sometimes','required','integer','exists:units,id'];
-        if ($propertyId = PropertyAccess::currentId()) {
-            $propertyRule[] = Rule::in([$propertyId]);
-            $unitRule = ['sometimes','required','integer', Rule::exists('units', 'id')->where('property_id', $propertyId)];
+        $propertyContextId = PropertyAccess::currentId();
+        if ($propertyContextId) {
+            $propertyRule[] = Rule::in([$propertyContextId]);
+            $unitRule = ['sometimes','required','integer', Rule::exists('units', 'id')->where('property_id', $propertyContextId)];
+        }
+
+        $tenantRule = ['sometimes','required','integer','exists:tenants,id'];
+        $tenantPropertyId = $this->input('property_id') ?? $propertyContextId ?? $this->route('contract')?->property_id;
+        if ($tenantPropertyId) {
+            $tenantRule = ['sometimes','required','integer', Rule::exists('tenants', 'id')->where('property_id', $tenantPropertyId)];
         }
 
         return [
             'contract_no' => ['nullable','string','max:190','unique:contracts,contract_no,'.$id],
             'property_id' => $propertyRule,
             'unit_id' => $unitRule,
-            'tenant_id' => ['sometimes','required','integer','exists:tenants,id'],
+            'tenant_id' => $tenantRule,
             'start_date' => ['sometimes','required','date'],
             'duration_months' => ['sometimes','required','integer','min:1','max:365'],
             'end_date' => ['nullable','date'],

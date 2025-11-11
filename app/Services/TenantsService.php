@@ -20,7 +20,7 @@ class TenantsService
     {
         return DB::transaction(function() use ($data) {
             $tenantData = Arr::only($data, [
-                'full_name','tenant_type','national_id_or_cr','work_or_study_place','email','phone','phone2','address',
+                'property_id','full_name','tenant_type','national_id_or_cr','work_or_study_place','email','phone','phone2','address',
             ]);
             $tenant = Tenant::create($tenantData);
             foreach (Arr::get($data, 'relatives', []) as $rel) {
@@ -42,7 +42,7 @@ class TenantsService
     {
         return DB::transaction(function() use ($tenant, $data) {
             $tenantData = Arr::only($data, [
-                'full_name','tenant_type','national_id_or_cr','work_or_study_place','email','phone','phone2','address',
+                'property_id','full_name','tenant_type','national_id_or_cr','work_or_study_place','email','phone','phone2','address',
             ]);
             $tenant->update($tenantData);
             $tenant->relatives()->delete();

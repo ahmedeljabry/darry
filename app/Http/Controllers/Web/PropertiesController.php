@@ -47,6 +47,7 @@ class PropertiesController extends Controller
         $property->load([
             'facilities:id,name',
             'floors',
+            'owners' => fn ($query) => $query->orderBy('full_name'),
             'units' => fn ($query) => $query->with('parent')->orderBy('name'),
         ]);
 

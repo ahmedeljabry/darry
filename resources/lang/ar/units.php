@@ -34,4 +34,5 @@ return [
         'INACTIVE' => 'غير نشطة',
     ],
     'property' => 'العقار',
+    'quick_add' => 'إضافة ملحق',
 ];

@@ -5,6 +5,7 @@ namespace App\Models;
 
 use App\Domain\Enums\PropertyUseType;
 use App\Models\Floor;
+use App\Models\Owner;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -49,6 +50,11 @@ class Property extends Model
     public function units(): HasMany
     {
         return $this->hasMany(Unit::class);
+    }
+
+    public function owners(): HasMany
+    {
+        return $this->hasMany(Owner::class);
     }
 
     public function floors(): HasMany

@@ -16,6 +16,14 @@
 
 @section('content')
     <x-admin.form-card :title="__('tenants.create')" :action="route('admin.tenants.store')" :back="route('admin.tenants.index')">
+        @include('admin.tenants.partials.property-field', [
+            'canManageSystem' => $canManageSystem ?? false,
+            'properties' => $properties ?? [],
+            'currentPropertyId' => $currentPropertyId ?? null,
+            'currentPropertyName' => $currentPropertyName ?? null,
+            'value' => old('property_id'),
+        ])
+
         <x-admin.select-solid name="tenant_type" :label="__('tenants.tenant_type')" :options="['PERSONAL' => __('tenants.tenant_types.PERSONAL'),'COMMERCIAL' => __('tenants.tenant_types.COMMERCIAL')]" required />
 
         <x-admin.input-solid name="full_name" :label="__('tenants.full_name')" placeholder="{{ __('tenants.full_name') }}" required />
@@ -28,8 +36,8 @@
         <x-admin.textarea-solid name="address" :label="__('tenants.address')" />
 
         <hr>
-        <h5 class="mb-3">{{ __('tenants.relatives') }}</h5>
         <div id="tenantRelatives">
+            <h5 class="mb-3">{{ __('tenants.relatives') }}</h5>
             <div class="row">
                 <div class="col-md-6">
                     <div class="card card-custom mb-4">

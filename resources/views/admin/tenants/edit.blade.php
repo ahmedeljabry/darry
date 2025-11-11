@@ -17,6 +17,14 @@
 
 @section('content')
     <x-admin.form-card :title="__('tenants.edit_tenants')" :action="route('admin.tenants.update', $tenant)" method="PUT" :back="route('admin.tenants.index')">
+        @include('admin.tenants.partials.property-field', [
+            'canManageSystem' => $canManageSystem ?? false,
+            'properties' => $properties ?? [],
+            'currentPropertyId' => $currentPropertyId ?? null,
+            'currentPropertyName' => $currentPropertyName ?? null,
+            'value' => old('property_id', $tenant->property_id),
+        ])
+
         <x-admin.select-solid name="tenant_type" :label="__('tenants.tenant_type')" :options="['PERSONAL' => __('tenants.tenant_types.PERSONAL'),'COMMERCIAL' => __('tenants.tenant_types.COMMERCIAL')]" :value="old('tenant_type', $tenant->tenant_type)" required />
 
         <x-admin.input-solid name="full_name" :label="__('tenants.full_name')" :value="$tenant->full_name" placeholder="{{ __('tenants.full_name') }}" required />
@@ -30,8 +38,8 @@
 
         @php($rels = $tenant->relatives()->take(2)->get()->values())
         <hr>
-        <h5 class="mb-3">{{ __('tenants.relatives') }}</h5>
         <div id="tenantRelatives">
+            <h5 class="mb-3">{{ __('tenants.relatives') }}</h5>
             <div class="row">
             <div class="col-md-6">
                 <div class="card card-custom mb-4">

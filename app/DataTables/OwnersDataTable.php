@@ -17,8 +17,15 @@ class OwnersDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            ->editColumn('status', fn (Owner $o) => $o->status === 'ACTIVE' ? __('owners.active') : __('owners.inactive'))
-            ->editColumn('owner_type', fn (Owner $o) => $o->owner_type === 'COMMERCIAL' ? __('owners.types.COMMERCIAL') : __('owners.types.PERSONAL'))
+            ->editColumn('property_name', fn (Owner $o) => e($o->property_name ?? $o->property?->name ?? '—'))
+            ->editColumn('status', fn (Owner $o) => $o->status === 'ACTIVE'
+                ? __('owners.active')
+                : ($o->status === 'INACTIVE' ? __('owners.inactive') : '—')
+            )
+            ->editColumn('owner_type', fn (Owner $o) => $o->owner_type
+                ? __('owners.types.' . $o->owner_type)
+                : '—'
+            )
             ->addColumn('actions', function (Owner $o) {
                 return view('admin.layouts.partials._actions', [
                     'showRoute' => null,
@@ -32,7 +39,21 @@ class OwnersDataTable extends DataTable
 
     public function query(Owner $model): QueryBuilder
     {
-        return $model->newQuery()->select(['id','full_name','id_or_cr','email','phone','address','owner_type','status']);
+        return $model->newQuery()
+            ->with('property')
+            ->select([
+                'owners.id',
+                'owners.property_id',
+                'owners.full_name',
+                'owners.id_or_cr',
+                'owners.email',
+                'owners.phone',
+                'owners.address',
+                'owners.owner_type',
+                'owners.status',
+                'properties.name as property_name',
+            ])
+            ->leftJoin('properties', 'properties.id', '=', 'owners.property_id');
     }
 
     public function html(): HtmlBuilder
@@ -64,6 +85,7 @@ class OwnersDataTable extends DataTable
             Column::make('email')->title(__('owners.email')),
             Column::make('phone')->title(__('owners.phone')),
             Column::make('address')->title(__('owners.address')),
+            Column::make('property_name')->title(__('owners.property')),
             Column::make('owner_type')->title(__('owners.type')),
             Column::make('status')->title(__('owners.status')),
             Column::computed('actions')->title(__('messages.actions'))->exportable(false)->printable(false)->width(120)->addClass('text-center'),

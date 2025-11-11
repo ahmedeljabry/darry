@@ -25,15 +25,22 @@ class UpdateContractPaymentRequest extends FormRequest
     {
         $propertyRule = ['sometimes','required','integer','exists:properties,id'];
         $unitRule = ['sometimes','required','integer','exists:units,id'];
-        if ($propertyId = PropertyAccess::currentId()) {
-            $propertyRule[] = Rule::in([$propertyId]);
-            $unitRule = ['sometimes','required','integer', Rule::exists('units', 'id')->where('property_id', $propertyId)];
+        $propertyContextId = PropertyAccess::currentId();
+        if ($propertyContextId) {
+            $propertyRule[] = Rule::in([$propertyContextId]);
+            $unitRule = ['sometimes','required','integer', Rule::exists('units', 'id')->where('property_id', $propertyContextId)];
+        }
+
+        $tenantRule = ['sometimes','required','integer','exists:tenants,id'];
+        $tenantPropertyId = $this->input('property_id') ?? $propertyContextId ?? $this->route('contract_payment')?->property_id;
+        if ($tenantPropertyId) {
+            $tenantRule = ['sometimes','required','integer', Rule::exists('tenants', 'id')->where('property_id', $tenantPropertyId)];
         }
 
         return [
             'property_id' => $propertyRule,
             'unit_id' => $unitRule,
-            'tenant_id' => ['sometimes','required','integer','exists:tenants,id'],
+            'tenant_id' => $tenantRule,
             'period_month' => ['sometimes','required','integer','between:1,12'],
             'period_year' => ['sometimes','required','integer','between:2000,2100'],
             'amount_due' => ['sometimes','required','numeric','min:0'],

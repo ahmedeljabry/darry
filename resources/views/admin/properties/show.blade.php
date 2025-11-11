@@ -68,12 +68,50 @@
                             @endif
                         </div>
                     </div>
+            </div>
+        </div>
+
+        <div class="card card-custom mb-5">
+            <div class="card-header border-0">
+                <div class="card-title">
+                    <h3 class="card-label">{{ __('owners.title') }}</h3>
                 </div>
             </div>
+            <div class="card-body border-top p-9">
+                @if($property->owners->isEmpty())
+                    <span class="text-muted">{{ __('messages.not_available') ?? 'لا توجد بيانات' }}</span>
+                @else
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('owners.full_name') }}</th>
+                                    <th>{{ __('owners.id_or_cr') }}</th>
+                                    <th>{{ __('owners.phone') }}</th>
+                                    <th>{{ __('owners.email') }}</th>
+                                    <th>{{ __('owners.type') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($property->owners as $owner)
+                                    <tr>
+                                        <td>{{ $owner->full_name }}</td>
+                                        <td>{{ $owner->id_or_cr ?? '—' }}</td>
+                                        <td>{{ $owner->phone ?? '—' }}</td>
+                                        <td>{{ $owner->email ?? '—' }}</td>
+                                        <td>{{ $owner->owner_type ? __('owners.types.' . $owner->owner_type) : '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
 
-            <div class="card card-custom mb-5">
-                <div class="card-header border-0">
-                    <div class="card-title">
+        <div class="card card-custom mb-5">
+            <div class="card-header border-0">
+                <div class="card-title">
                         <h3 class="card-label">{{ __('properties.images') }}</h3>
                     </div>
                 </div>
